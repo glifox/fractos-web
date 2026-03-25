@@ -1,0 +1,22 @@
+{
+  "name": "fractos-web",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@catppuccin/codemirror": "^1.0.3",
+    "@codemirror/state": "^6.6.0",
+    "@glifox/gnosis": "^0.0.19",
+    "codemirror": "^6.0.2",
+    "fractos": "link:../fractos",
+    "loro-crdt": "^1.10.7"
+  },
+  "scripts": {
+    "prev:home": "bun ./app/home/index.html"
+  }
+}
