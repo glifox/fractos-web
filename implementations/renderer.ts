@@ -1,19 +1,36 @@
+import type { TreeID } from 'loro-crdt';
 import '../app/components/linear-progress';
-import type { __Project, __Task, FractosRenderer, Metadata, ShowState } from "fractos";
-import type { HasExpressionInitializer } from "typescript";
+import type { __Project, __Task, FractosRenderer, FractosState, Metadata, ShowState } from "fractos";
+
+
+const TaskHtml = /* html */`
+  <div class="--ts-root">
+      <input type="checkbox"/>
+      <div style="display: inline flex; flex-direction: column;">
+          <h3 class="--ts-title">Titulo</h3>
+          <!--<p>This is a description</p>-->
+      </div>
+      <linear-progress class="--ts-progress"></linear-progress>
+      <div class="--ts-childs" style="padding-left: 4px"></div>
+  </div>
+  `;
 
 export class Renderer implements FractosRenderer {
-  changeState(el: __Task | __Project, state: ShowState): void {
-    
-  } 
+  constructor(private state: FractosState) {}
   
-  task(data: Metadata): __Task {
+  changeState(el: __Task | __Project, state: ShowState): void {} 
+  
+  task(data: Metadata, id: TreeID): __Task {
     const __fake_root = document.createElement('div');
-    __fake_root.innerHTML = TASK;
+    __fake_root.innerHTML = TaskHtml;
     
     const __root = __fake_root.querySelector(".--ts-root")! as HTMLElement;
     const __title = __fake_root.querySelector(".--ts-title")! as HTMLElement;
     const __checkbox = __fake_root.querySelector("input")! as HTMLInputElement;
+    __checkbox.addEventListener('click', () => {
+      if (__checkbox.checked) this.state.update({ type: "task", percentage: 100, id: id })
+      else this.state.reCalculatePercentage(id);
+    })
     const __percentage = __fake_root.querySelector(".--ts-progress")! as HTMLElement;
     // const __description = __fake_root.querySelector(".--ts-root")! as HTMLElement;
     const __tasks = __fake_root.querySelector(".--ts-childs")! as HTMLElement;
@@ -33,7 +50,7 @@ export class Renderer implements FractosRenderer {
     }
   }
   
-  project(data: Metadata): __Project {
+  project(data: Metadata, id: TreeID): __Project {
     const __root = document.createElement("div");
     const __title = document.createElement("h1");
     const __percentage = document.createElement("span");
@@ -63,15 +80,3 @@ export class Renderer implements FractosRenderer {
     __element.dataset.percentage = `${percentage}`;
   }
 }
-
-const TASK = /* html */`
-  <div class="--ts-root">
-      <input type="checkbox"/>
-      <div style="display: inline flex; flex-direction: column;">
-          <h3 class="--ts-title">Titulo</h3>
-          <!--<p>This is a description</p>-->
-      </div>
-      <linear-progress class="--ts-progress"></linear-progress>
-      <div class="--ts-childs"></div>
-  </div>
-  `;

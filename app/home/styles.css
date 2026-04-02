@@ -1,0 +1,6 @@
+
+/* Desabilita los hijos */
+.--ts-root:has(> :checked) .--ts-childs { 
+    pointer-events: none;
+    opacity: 0.6;
+}

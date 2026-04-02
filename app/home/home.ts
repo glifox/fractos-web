@@ -8,7 +8,7 @@ const state = new FractosState({ doc });
 const view = new FractosView({
   state: state,
   parent: document.getElementById("view")!,
-  render: new Renderer(),
+  render: new Renderer(state),
 })
 
 
