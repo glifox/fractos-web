@@ -1,3 +1,4 @@
+import '../app/components/linear-progress';
 import type { __Project, __Task, FractosRenderer, Metadata, ShowState } from "fractos";
 import type { HasExpressionInitializer } from "typescript";
 
@@ -8,27 +9,27 @@ export class Renderer implements FractosRenderer {
   
   task(data: Metadata): __Task {
     const __fake_root = document.createElement('div');
-    
     __fake_root.innerHTML = TASK;
     
-    console.info("__fake_root:", __fake_root);
-    
-    const __root = __fake_root.querySelector(".task--root")! as HTMLElement;
-    const __title = __fake_root.querySelector(".task--title")! as HTMLElement;
-    const __percentage = __fake_root.querySelector("input")! as HTMLInputElement;
-    // const __description = __fake_root.querySelector(".task--root")! as HTMLElement;
-    const __tasks = __fake_root.querySelector(".childs")! as HTMLElement;
+    const __root = __fake_root.querySelector(".--ts-root")! as HTMLElement;
+    const __title = __fake_root.querySelector(".--ts-title")! as HTMLElement;
+    const __checkbox = __fake_root.querySelector("input")! as HTMLInputElement;
+    const __percentage = __fake_root.querySelector(".--ts-progress")! as HTMLElement;
+    // const __description = __fake_root.querySelector(".--ts-root")! as HTMLElement;
+    const __tasks = __fake_root.querySelector(".--ts-childs")! as HTMLElement;
     
     __title.innerText = data.title || "";
     // __description.innerText = data.description || "";
-    if (data.percentage) Renderer.setProgress(__percentage, data.percentage);
+    if (data.percentage) Renderer.setProgress(__checkbox, __percentage, data.percentage);
     
     return {
       self: __root,
       tasks: __tasks,
       title: (title) => { __title.innerText = title },
       description: (description) => {  },
-      percentage: (value) => { Renderer.setProgress(__percentage, value) },
+      percentage: (value) => {
+        Renderer.setProgress(__checkbox, __percentage, value)
+      },
     }
   }
   
@@ -54,22 +55,23 @@ export class Renderer implements FractosRenderer {
     }
   }
   
-  private static setProgress(__element: HTMLInputElement, percentage: number) {
-    if (percentage == 100) __element.checked = true; 
-    else if (percentage < 100 && percentage >= 0) __element.checked = false; 
+  private static setProgress(__checkbox: HTMLInputElement, __element: HTMLElement, percentage: number) {
+    if (percentage == 100) __checkbox.checked = true; 
+    else if (percentage < 100 && percentage >= 0) __checkbox.checked = false; 
     else throw Error(`[renderer] Invalid value of percentage: '${percentage}'`)
     
-    __element.dataset.value = `${percentage}`;
+    __element.dataset.percentage = `${percentage}`;
   }
 }
 
-const TASK = `
-<div class="task--root">
-    <input type="checkbox"/>
-    <div style="display: inline flex; flex-direction: column;"> 
-        <h3 class="task--title">Titulo</h3>
-        <!--<p>This is a description</p>-->
-    </div>
-    <div class="childs"></div>
-</div>
-`
+const TASK = /* html */`
+  <div class="--ts-root">
+      <input type="checkbox"/>
+      <div style="display: inline flex; flex-direction: column;">
+          <h3 class="--ts-title">Titulo</h3>
+          <!--<p>This is a description</p>-->
+      </div>
+      <linear-progress class="--ts-progress"></linear-progress>
+      <div class="--ts-childs"></div>
+  </div>
+  `;
