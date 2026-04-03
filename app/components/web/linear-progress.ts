@@ -55,7 +55,6 @@ class LinearProgress extends HTMLElement {
           background-color: var(--lp-fill);
           pointer-events: none;
           
-          pointer-events: none;
           top: 0;
           left: 0;
           

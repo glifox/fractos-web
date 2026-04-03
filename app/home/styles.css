@@ -1,4 +1,13 @@
 
+.--ts-content {
+    border-radius: 8px;
+    border: 2px solid gray;
+    padding: 4px;
+    padding-right: 16px;
+    margin: 4px;
+    margin-right: 0;
+}
+
 /* Desabilita los hijos */
 .--ts-root:has(> div > :checked) .--ts-childs { 
     pointer-events: none;
@@ -13,3 +22,18 @@
 .--ts-title {
     flex-grow: 1;
 }
+
+.--ts-progress {
+    --lp-bg: #0022;
+    --lp-fill: gray;
+    
+    --lp-text: transparent;
+    --lp-text-fill: transparent;
+    
+    --lp-border-color: transparent;
+    --lp-border-width: 0;
+    
+    --lp-width: 6rem;
+    --lp-duration: 0.4s;
+}
+
