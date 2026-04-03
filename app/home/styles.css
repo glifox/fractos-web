@@ -1,6 +1,15 @@
 
 /* Desabilita los hijos */
-.--ts-root:has(> :checked) .--ts-childs { 
+.--ts-root:has(> div > :checked) .--ts-childs { 
     pointer-events: none;
     opacity: 0.6;
+}
+
+.--ts-content {
+    display: flex;
+    align-items: center;
+}
+
+.--ts-title {
+    flex-grow: 1;
 }

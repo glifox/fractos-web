@@ -1,6 +1,6 @@
 import { LoroDoc } from "loro-crdt";
 import { FractosState, FractosView } from "fractos";
-import { Renderer } from "../../implementations/renderer";
+import { Renderer } from "../components/implementations/renderer";
 
 const doc = new LoroDoc()
 
