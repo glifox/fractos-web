@@ -1,6 +1,10 @@
 import "../web/linear-progress";
 
-import type { FractosState, Metadata } from "fractos";
+import { EditorView, minimalSetup } from "codemirror";
+import { Transaction } from "@codemirror/state";
+import { EditorSelection, EditorState } from "@codemirror/state";
+
+import type { FractosState } from "fractos";
 import type { TreeID } from "loro-crdt";
 
 
@@ -18,6 +22,8 @@ export class Task {
   private __percentage: HTMLElement;
   private __tasks: HTMLElement;
   
+  private cmTitle: EditorView;
+  
   constructor(private id: TreeID, private state: FractosState) {
     this.__root = document.createElement('div');
     this.__root.classList.add("--ts-root");
@@ -28,19 +34,31 @@ export class Task {
     this.__percentage = this.__root.querySelector(".--ts-progress") as HTMLElement;
     this.__tasks = this.__root.querySelector(".--ts-childs") as HTMLElement;
     
+    this.cmTitle = Editor(this.__title, _ => this.updateTitle());
     this.set_events();
   }
   
   setTitle = (title: string) => {
-    this.__title.innerText = title
+    this.cmTitle.dispatch({
+      changes: { from: 0, insert: title, to: this.cmTitle.state.doc.length },
+      annotations: [ Transaction.addToHistory.of(false) ]
+    })
   }
   
-  setPercentage = (percentage: number) => {
+  setPercentage  = (percentage: number) => {
     if (percentage == 100) (this.__checkbox as HTMLInputElement).checked = true; 
     else if (percentage < 100 && percentage >= 0) (this.__checkbox as HTMLInputElement).checked = false; 
     else throw Error(`[class::task] Invalid value of percentage: '${percentage}'`)
     
     this.__percentage.dataset.percentage = `${percentage}`;
+  }
+  
+  private updateTitle() {
+    this.state.update({
+      id: this.id,
+      type: "task",
+      title: this.cmTitle.state.doc.toString(),
+    })
   }
   
   get root() { return this.__root }
@@ -72,16 +90,64 @@ export class Task {
         <h3 class="--ts-title"></h3>
         <linear-progress class="--ts-progress"></linear-progress>
     </div>
-    <div class="--ts-childs" style="padding-left: 4px"></div>
+    <div class="--ts-childs" style="padding-left: 16px"></div>
   `;
   
   
   private events: { [Z in TaskElement]?: { [K in keyof HTMLElementEventMap]?: EventListener } } = {
     'checkbox': {
-      'click': (event) => {
+      'click': (_) => {
         if ((this.__checkbox as HTMLInputElement).checked) this.state.update({ type: "task", percentage: 100, id: this.id })
         else this.state.reCalculatePercentage(this.id);
       }
     }
   }
+}
+
+const Editor = (parent: HTMLElement, onConfirm: (view: EditorView) => void) => {
+  let forced_focus_out = false;
+  
+  const view = new EditorView({
+    doc: `[vacio]`,
+    extensions: [
+      minimalSetup,
+      EditorState.transactionFilter.of(
+        tr => tr.newDoc.lines > 1 ? [] : [tr]
+      ),
+      EditorView.domEventHandlers({
+        'mousedown': (e, v) => {
+          if (v.hasFocus) return false;
+          e.preventDefault();
+          return true;
+        },
+        'dblclick': (e, v) => {
+          if (v.hasFocus) return false;
+          e.preventDefault();
+          const pos = view.posAtCoords({ x: e.clientX, y: e.clientY }, false)
+          view.focus();
+          view.dispatch({ selection: EditorSelection.cursor(pos || 0), scrollIntoView: true });
+          return false;
+        },
+        'keyup': (e, v) => {
+          if (e.key === "Enter") {
+            onConfirm(v)
+            forced_focus_out = true
+            v.contentDOM.blur()
+            return;
+          }
+        },
+        'focusout': (_, v) => {
+          v.dispatch({ selection: EditorSelection.cursor(0) })
+          if (forced_focus_out) {
+            forced_focus_out = false
+            return false
+          }
+          onConfirm(v)
+        }
+      })
+    ],
+    parent,
+  });
+
+  return view;
 }
