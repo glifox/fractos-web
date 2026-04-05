@@ -3,6 +3,7 @@ import "../web/linear-progress";
 import { EditorView, minimalSetup } from "codemirror";
 import { Transaction } from "@codemirror/state";
 import { EditorSelection, EditorState } from "@codemirror/state";
+import { createKeybindingsHandler } from "@glifox/desmos";
 
 import type { FractosState } from "fractos";
 import type { TreeID } from "loro-crdt";
@@ -11,6 +12,7 @@ import type { TreeID } from "loro-crdt";
 type TaskElement =
   "root" |
   "title" |
+  "content" |
   "checkbox" |
   "percentage" |
   "tasks";
@@ -18,11 +20,14 @@ type TaskElement =
 export class Task {  
   private __root: HTMLElement;
   private __title: HTMLElement;
+  private __content: HTMLElement;
   private __checkbox: HTMLElement;
   private __percentage: HTMLElement;
   private __tasks: HTMLElement;
   
   private cmTitle: EditorView;
+  private _percentage: number = 0;
+  get percentage() { return this._percentage }
   
   constructor(private id: TreeID, private state: FractosState) {
     this.__root = document.createElement('div');
@@ -30,12 +35,18 @@ export class Task {
     this.__root.innerHTML = this.innerHTML;
     
     this.__title = this.__root.querySelector(".--ts-title")! as HTMLElement;
+    this.__content = this.__root.querySelector(".--ts-content")! as HTMLElement;
     this.__checkbox = this.__root.querySelector(".--ts-checkbox")! as HTMLElement;
     this.__percentage = this.__root.querySelector(".--ts-progress") as HTMLElement;
     this.__tasks = this.__root.querySelector(".--ts-childs") as HTMLElement;
     
-    this.cmTitle = Editor(this.__title, _ => this.updateTitle());
     this.set_events();
+    this.cmTitle = Editor(
+      this.__title,
+      _ => {
+        this.__content.focus()
+        this.updateTitle()
+    });
   }
   
   setTitle = (title: string) => {
@@ -51,6 +62,7 @@ export class Task {
     else throw Error(`[class::task] Invalid value of percentage: '${percentage}'`)
     
     this.__percentage.dataset.percentage = `${percentage}`;
+    this._percentage = percentage;
   }
   
   private updateTitle() {
@@ -68,6 +80,7 @@ export class Task {
     const elements: { [Z in TaskElement]: HTMLElement } = {
       root: this.__root,
       title: this.__title,
+      content: this.__content,
       checkbox: this.__checkbox,
       percentage: this.__percentage,
       tasks: this.__tasks,
@@ -85,7 +98,7 @@ export class Task {
   }
   
     private innerHTML = /* html */`
-    <div class="--ts-content">
+    <div class="--ts-content" tabindex="0">
         <input class="--ts-checkbox" type="checkbox"/>
         <h3 class="--ts-title"></h3>
         <linear-progress class="--ts-progress"></linear-progress>
@@ -96,10 +109,118 @@ export class Task {
   
   private events: { [Z in TaskElement]?: { [K in keyof HTMLElementEventMap]?: EventListener } } = {
     'checkbox': {
-      'click': (_) => {
-        if ((this.__checkbox as HTMLInputElement).checked) this.state.update({ type: "task", percentage: 100, id: this.id })
-        else this.state.reCalculatePercentage(this.id);
+      'click': (_) => this._toggle_check()
+    },
+    'content': {
+      'keydown': (e) => {
+        if (this.cmTitle.hasFocus) return;
+        this.__content_keybindings(e)
       }
+    }
+  }
+  // Key-events
+  private __content_keybindings = createKeybindingsHandler({
+    'enter': () => {
+      alert("Create task")
+    },
+    'tab': (e) => {
+      e.preventDefault()
+      this._focus_next_task()
+    },
+    'shift-tab': (e) => {
+      e.preventDefault()
+      this._focus_previous_task()
+    },
+    'ArrowDown': (e) => {
+      e.preventDefault()
+      this._focus_next_task()
+    },
+    'ArrowUp': (e) => {
+      e.preventDefault()
+      this._focus_previous_task()
+    },
+    'Space': (e) => {
+      e.preventDefault()
+      this._toggle_check(true)
+    },
+    'ctrl-ArrowDown': (e) => {
+      e.preventDefault()
+      this._change_percentage("down")
+    },
+    'ctrl-ArrowUp': (e) => {
+      e.preventDefault()
+      this._change_percentage("up")
+    },
+  })
+  
+  // Actions
+  private _focus_next_task() {
+    if (this.__tasks.children.length > 0) {
+      // @ts-ignore
+      this.__tasks.firstChild.querySelector('.--ts-content').focus()
+      return
+    }
+    
+    const __sibling = this.__root.nextElementSibling;
+    if (__sibling && __sibling.classList.contains("--ts-root")) {
+      // @ts-ignore
+      __sibling.querySelector('.--ts-content').focus()
+    }
+  }
+  
+  private _focus_previous_task() {
+    const __prev_sibling = this.__root.previousElementSibling;
+    if (
+      !__prev_sibling ||
+      !__prev_sibling.classList.contains("--ts-root")
+    ) {
+      
+      const __parent_root = this.__root.parentElement?.parentElement;
+      
+      if (__parent_root && __parent_root.classList.contains("--ts-root")) {
+        // @ts-ignore
+        __parent_root.querySelector('.--ts-content').focus()
+      }
+      
+      return
+    }
+    
+    const __tasks = __prev_sibling.querySelector('.--ts-tasks');
+    if (__tasks && __tasks.children.length > 0) {
+      // @ts-ignore
+      __tasks.lastChild.querySelector('.--ts-content').focus()
+      return
+    }
+    
+    // @ts-ignore
+    __prev_sibling.querySelector('.--ts-content').focus()
+  }
+  
+  private _toggle_check(invert: boolean = false) {
+    if (invert !== (this.__checkbox as HTMLInputElement).checked) this.state.update({ type: "task", percentage: 100, id: this.id })
+    else this.state.reCalculatePercentage(this.id);
+  }
+  
+  private _change_percentage(mode: "up" | "down", step: number = 10) {
+    if (this.__tasks.childElementCount > 0) return;
+    
+    let percentage = this._percentage;
+    if (mode == "up") {
+      percentage += step;
+      if (percentage > 100) percentage = 100
+    }
+    if (mode == "down") {
+      percentage -= step;
+      if (percentage < 0) percentage = 0
+    }
+    
+    if (percentage !== this._percentage) {
+      this.state.update({
+        id: this.id,
+        type: "task",
+        percentage,
+      })
+      console.info("percentage:", percentage);
     }
   }
 }

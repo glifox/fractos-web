@@ -3,14 +3,13 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
-  "devDependencies": {
-  },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
     "@catppuccin/codemirror": "^1.0.3",
     "@codemirror/state": "^6.6.0",
+    "@glifox/desmos": "^0.1.1",
     "@glifox/gnosis": "^0.0.19",
     "codemirror": "^6.0.2",
     "fractos": "link:../fractos",
