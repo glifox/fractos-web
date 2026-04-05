@@ -8,6 +8,7 @@ import { createKeybindingsHandler } from "@glifox/desmos";
 
 import type { FractosState, Metadata, TaskData } from "fractos";
 import type { TreeID } from "loro-crdt";
+import { resolveTripleslashReference } from "typescript";
 
 
 type TaskElement =
@@ -117,14 +118,19 @@ export class Task {
     'content': {
       'keyup': (e) => {
         if (this.cmTitle.hasFocus) return;
-        this.__content_keybindings(e)
-      }
+        this.__content_keybindings(e as KeyboardEvent, "up")
+      },
+      'keydown': (e) => {
+        if (this.cmTitle.hasFocus) return;
+        this.__content_keybindings(e as KeyboardEvent, "down")
+      }, 
     }
   }
   
   // Key-events
-  private __content_keybindings = createKeybindingsHandler({
-    'enter': (e) => {
+  private __content_keybindings: (event: KeyboardEvent, mode: "up" | "down") => void = createKeybindingsHandler({
+    'enter': (e, mode: "up" | "down") => {
+      if (mode == 'down') return;
       const newTask = new NewTask({
         onConfirm: (v) => {
           console.log("confirmed")
@@ -142,32 +148,39 @@ export class Task {
       this.__root.parentElement!.appendChild(newTask.__root);
       newTask.focus()
     },
-    'tab': (e) => {
+    'tab': (e, mode: "up" | "down") => {
       e.preventDefault()
+      if (mode == 'up') return;
       this._focus_next_task()
     },
-    'shift-tab': (e) => {
+    'shift-tab': (e, mode: "up" | "down") => {
       e.preventDefault()
+      if (mode == 'up') return;
       this._focus_previous_task()
     },
-    'ArrowDown': (e) => {
+    'ArrowDown': (e, mode: "up" | "down") => {
       e.preventDefault()
+      if (mode == 'up') return;
       this._focus_next_task()
     },
-    'ArrowUp': (e) => {
+    'ArrowUp': (e, mode: "up" | "down") => {
       e.preventDefault()
+      if (mode == 'up') return;
       this._focus_previous_task()
     },
-    'Space': (e) => {
+    'Space': (e, mode: "up" | "down") => {
       e.preventDefault()
+      if (mode == 'up') return;
       this._toggle_check(true)
     },
-    'ctrl-ArrowDown': (e) => {
+    'ctrl-ArrowDown': (e, mode: "up" | "down") => {
       e.preventDefault()
+      if (mode == 'up') return;
       this._change_percentage("down")
     },
-    'ctrl-ArrowUp': (e) => {
+    'ctrl-ArrowUp': (e, mode: "up" | "down") => {
       e.preventDefault()
+      if (mode == 'up') return;
       this._change_percentage("up")
     },
   })
