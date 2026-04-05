@@ -33,7 +33,7 @@ export class Task {
   constructor(private id: TreeID, private state: FractosState) {
     this.__root = document.createElement('div');
     this.__root.classList.add("--ts-root");
-    this.__root.innerHTML = this.innerHTML;
+    this.__root.innerHTML = Task.innerHTML;
     
     this.__title = this.__root.querySelector(".--ts-title")! as HTMLElement;
     this.__content = this.__root.querySelector(".--ts-content")! as HTMLElement;
@@ -100,7 +100,7 @@ export class Task {
     }
   }
   
-    private innerHTML = /* html */`
+    static innerHTML = /* html */`
     <div class="--ts-content" tabindex="0">
         <input class="--ts-checkbox" type="checkbox"/>
         <h3 class="--ts-title"></h3>
@@ -115,7 +115,7 @@ export class Task {
       'click': (_) => this._toggle_check()
     },
     'content': {
-      'keydown': (e) => {
+      'keyup': (e) => {
         if (this.cmTitle.hasFocus) return;
         this.__content_keybindings(e)
       }
@@ -127,19 +127,20 @@ export class Task {
     'enter': (e) => {
       const newTask = new NewTask({
         onConfirm: (v) => {
+          console.log("confirmed")
           this._create_new_task({
             title: v.state.doc.toString(),
-            description: "No description"
+            description: ""
           })
           newTask.__root.remove()
+          this.focus.nextSibling()
         },
         onCancel: () => {
           newTask.__root.remove()
         }
       });
-      document.body.appendChild(newTask.__root);
-      e.stopImmediatePropagation()
-      e.stopPropagation()
+      this.__root.parentElement!.appendChild(newTask.__root);
+      newTask.focus()
     },
     'tab': (e) => {
       e.preventDefault()
@@ -172,55 +173,78 @@ export class Task {
   })
   
   // Actions
-  private _focus_next_task() {
-    if (this.__tasks.children.length > 0) {
+  private focus = {
+    firstChild: () => {
+      if (this.__tasks.children.length > 0) {
+        // @ts-ignore
+        this.__tasks.firstChild.querySelector('.--ts-content').focus()
+        return true
+      }
+    },
+    nextSibling: () => {
+      const __sibling = this.__root.nextElementSibling;
+      if (__sibling && __sibling.classList.contains("--ts-root")) {
+        // @ts-ignore
+        __sibling.querySelector('.--ts-content').focus()
+        return true
+      }
+    },
+    previousSibling: () => {
+      const __prev_sibling = this.__root.previousElementSibling;
+      if (
+        !__prev_sibling ||
+        !__prev_sibling.classList.contains("--ts-root")
+      ) return
+      
       // @ts-ignore
-      this.__tasks.firstChild.querySelector('.--ts-content').focus()
-      return
-    }
-    
-    const __sibling = this.__root.nextElementSibling;
-    if (__sibling && __sibling.classList.contains("--ts-root")) {
+      __prev_sibling.querySelector('.--ts-content').focus()
+      return true
+    },
+    previousSiblingLastChild: () => {
+      const __prev_sibling = this.__root.previousElementSibling;
+      if (
+        !__prev_sibling ||
+        !__prev_sibling.classList.contains("--ts-root")
+      ) return
+      
+      const __tasks = __prev_sibling.querySelector('.--ts-childs');
+      if (__tasks && __tasks.children.length > 0) {
+        // @ts-ignore
+        __tasks.lastChild.querySelector('.--ts-content').focus()
+        return true
+      }
+    },
+    parentSibling: () => {
+      const parent = this.__root.parentElement?.closest(".--ts-root");
+      if (!parent) return
+      
+      const parentSibling = parent.nextElementSibling;
+      if (!parentSibling) return
+      
       // @ts-ignore
-      __sibling.querySelector('.--ts-content').focus()
-      return
-    }
-    
-    const parent = this.__root.parentElement?.closest(".--ts-root");
-    if (!parent) return
-    
-    const parentSibling = parent.nextElementSibling;
-    if (!parentSibling) return
-    
-    // @ts-ignore
-    parentSibling.querySelector('.--ts-content').focus()
-  }
-  
-  private _focus_previous_task() {
-    const __prev_sibling = this.__root.previousElementSibling;
-    if (
-      !__prev_sibling ||
-      !__prev_sibling.classList.contains("--ts-root")
-    ) {
+      parentSibling.querySelector('.--ts-content').focus()
+      return true
+    },
+    parent: () => {
       const __parent_root = this.__root.parentElement?.parentElement;
       
       if (__parent_root && __parent_root.classList.contains("--ts-root")) {
         // @ts-ignore
         __parent_root.querySelector('.--ts-content').focus()
+        return true
       }
-      
-      return
     }
-    
-    const __tasks = __prev_sibling.querySelector('.--ts-childs');
-    if (__tasks && __tasks.children.length > 0) {
-      // @ts-ignore
-      __tasks.lastChild.querySelector('.--ts-content').focus()
-      return
-    }
-    
-    // @ts-ignore
-    __prev_sibling.querySelector('.--ts-content').focus()
+  }
+  private _focus_next_task() {
+    if (this.focus.firstChild()) return;
+    if (this.focus.nextSibling()) return;
+    if (this.focus.parentSibling()) return;
+  }
+  
+  private _focus_previous_task() {
+    if (this.focus.previousSiblingLastChild()) return;
+    if (this.focus.previousSibling()) return;
+    if (this.focus.parent()) return;
   }
   
   private _toggle_check(invert: boolean = false) {
