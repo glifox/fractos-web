@@ -1,11 +1,12 @@
 import "../web/linear-progress";
+import { NewTask } from "./new-task";
 
 import { EditorView, minimalSetup } from "codemirror";
 import { Transaction } from "@codemirror/state";
 import { EditorSelection, EditorState } from "@codemirror/state";
 import { createKeybindingsHandler } from "@glifox/desmos";
 
-import type { FractosState } from "fractos";
+import type { FractosState, Metadata, TaskData } from "fractos";
 import type { TreeID } from "loro-crdt";
 
 
@@ -39,6 +40,8 @@ export class Task {
     this.__checkbox = this.__root.querySelector(".--ts-checkbox")! as HTMLElement;
     this.__percentage = this.__root.querySelector(".--ts-progress") as HTMLElement;
     this.__tasks = this.__root.querySelector(".--ts-childs") as HTMLElement;
+    
+    this.__tasks.dataset.treeid = id;
     
     this.set_events();
     this.cmTitle = Editor(
@@ -118,10 +121,25 @@ export class Task {
       }
     }
   }
+  
   // Key-events
   private __content_keybindings = createKeybindingsHandler({
-    'enter': () => {
-      alert("Create task")
+    'enter': (e) => {
+      const newTask = new NewTask({
+        onConfirm: (v) => {
+          this._create_new_task({
+            title: v.state.doc.toString(),
+            description: "No description"
+          })
+          newTask.__root.remove()
+        },
+        onCancel: () => {
+          newTask.__root.remove()
+        }
+      });
+      document.body.appendChild(newTask.__root);
+      e.stopImmediatePropagation()
+      e.stopPropagation()
     },
     'tab': (e) => {
       e.preventDefault()
@@ -165,7 +183,17 @@ export class Task {
     if (__sibling && __sibling.classList.contains("--ts-root")) {
       // @ts-ignore
       __sibling.querySelector('.--ts-content').focus()
+      return
     }
+    
+    const parent = this.__root.parentElement?.closest(".--ts-root");
+    if (!parent) return
+    
+    const parentSibling = parent.nextElementSibling;
+    if (!parentSibling) return
+    
+    // @ts-ignore
+    parentSibling.querySelector('.--ts-content').focus()
   }
   
   private _focus_previous_task() {
@@ -174,7 +202,6 @@ export class Task {
       !__prev_sibling ||
       !__prev_sibling.classList.contains("--ts-root")
     ) {
-      
       const __parent_root = this.__root.parentElement?.parentElement;
       
       if (__parent_root && __parent_root.classList.contains("--ts-root")) {
@@ -185,7 +212,7 @@ export class Task {
       return
     }
     
-    const __tasks = __prev_sibling.querySelector('.--ts-tasks');
+    const __tasks = __prev_sibling.querySelector('.--ts-childs');
     if (__tasks && __tasks.children.length > 0) {
       // @ts-ignore
       __tasks.lastChild.querySelector('.--ts-content').focus()
@@ -223,6 +250,14 @@ export class Task {
       console.info("percentage:", percentage);
     }
   }
+  
+  private _create_new_task(data: TaskData) {
+    const parent = this.__root.parentElement?.closest(".--ts-childs");
+    if (!parent) return
+    
+    const id = (parent as HTMLElement).dataset.treeid as TreeID;
+    this.state.createTask(data, id);
+  }
 }
 
 const Editor = (parent: HTMLElement, onConfirm: (view: EditorView) => void) => {
@@ -251,9 +286,9 @@ const Editor = (parent: HTMLElement, onConfirm: (view: EditorView) => void) => {
         },
         'keyup': (e, v) => {
           if (e.key === "Enter") {
-            onConfirm(v)
             forced_focus_out = true
             v.contentDOM.blur()
+            onConfirm(v)
             return;
           }
         },

@@ -39,6 +39,9 @@ export class Renderer implements FractosRenderer {
     
     __root.append(__title, __percentage, __description, __tasks)
     
+    __tasks.classList.add("--ts-childs");
+    __tasks.dataset.treeid = id;
+    
     return {
       self: __root,
       tasks: __tasks,
