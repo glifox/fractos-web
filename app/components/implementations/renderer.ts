@@ -1,9 +1,8 @@
-import '../web/linear-progress';
-
-import { Task } from '../class/task';
+import '../web/task'
 
 import type { TreeID } from 'loro-crdt';
 import type { __Project, __Task, FractosRenderer, FractosState, Metadata, ShowState } from "fractos";
+import type { FractosTaskElement } from '../web/task';
 
 
 export class Renderer implements FractosRenderer {
@@ -12,8 +11,9 @@ export class Renderer implements FractosRenderer {
   changeState(el: __Task | __Project, state: ShowState): void {} 
   
   task(data: Metadata, id: TreeID): __Task {
-    const _task = new Task(id, this.state);
+    const _task = document.createElement('fractos-task') as FractosTaskElement;
     
+    _task.init(this.state);
     _task.setTitle(data.title ?? "");
     if (data.percentage) _task.setPercentage(data.percentage);
     

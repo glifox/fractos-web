@@ -18,8 +18,8 @@ importers:
         specifier: ^6.41.0
         version: 6.41.0
       '@glifox/desmos':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       '@glifox/gnosis':
         specifier: ^0.0.19
         version: 0.0.19
@@ -134,8 +134,8 @@ packages:
   '@codemirror/view@6.41.0':
     resolution: {integrity: sha512-6H/qadXsVuDY219Yljhohglve8xf4B8xJkVOEWfA5uiYKiTFppjqsvsfR5iPA0RbvRBoOyTZpbLIxe9+0UR8xA==}
 
-  '@glifox/desmos@0.1.1':
-    resolution: {integrity: sha512-iIWywGkF5dDyIefDbNDpmwudocm8RPUzq4fS9SB1VKqJBThhrFBTImOcX3cxzyPqFD+hMJ+esOz5LePFjJtknA==}
+  '@glifox/desmos@0.1.2':
+    resolution: {integrity: sha512-oM9rBoJ7VRNBJrMkJISsjWFjlxq9FdUbHtcl9ZCrtcGcSQt2j5fM2Ji6igfbUg4fxpeNqJ1VSN/4UY/hViMNZA==}
 
   '@glifox/gnosis@0.0.19':
     resolution: {integrity: sha512-XSAmMcjqGkMOyV2O5vQfzCuIfpVJUA02QJgzQEfSg8y5L4XARB8C60KA+5EH9exSFHgTI6TqfZAD8SrdOraZNA==}
@@ -481,7 +481,7 @@ snapshots:
       style-mod: 4.1.3
       w3c-keyname: 2.2.8
 
-  '@glifox/desmos@0.1.1': {}
+  '@glifox/desmos@0.1.2': {}
 
   '@glifox/gnosis@0.0.19':
     dependencies:

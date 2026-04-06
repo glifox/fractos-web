@@ -10,7 +10,7 @@
     "@catppuccin/codemirror": "^1.0.3",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.41.0",
-    "@glifox/desmos": "^0.1.1",
+    "@glifox/desmos": "^0.1.2",
     "@glifox/gnosis": "^0.0.19",
     "codemirror": "^6.0.2",
     "fractos": "link:../fractos",

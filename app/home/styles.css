@@ -8,7 +8,7 @@
     margin-right: 0;
 }
 
-/* Desabilita los hijos */
+/*Desabilita los hijos*/
 .--ts-root:has(> div > :checked) .--ts-childs { 
     pointer-events: none;
     opacity: 0.6;
