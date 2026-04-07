@@ -2,7 +2,7 @@ import { EditorSelection, EditorState } from "@codemirror/state";
 import { placeholder } from "@codemirror/view";
 import { createKeybindingsHandler } from "@glifox/desmos";
 import { EditorView, minimalSetup } from "codemirror";
-import { Task } from "./task";
+// import { Task } from "./task";
 
 export type Callbacks = {
   onConfirm: (view: EditorView) => void,
@@ -15,7 +15,7 @@ export class NewTask {
   
   constructor(callbacks: Callbacks) {
     this.__root = document.createElement("div");
-    this.__root.innerHTML = Task.innerHTML;
+    this.__root.innerHTML = "Task.innerHTML";
     
     this.cm = Editor(this.__root.querySelector(".--ts-title")!, callbacks)
   }

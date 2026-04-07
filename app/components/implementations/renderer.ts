@@ -2,7 +2,8 @@ import '../web/task'
 
 import type { TreeID } from 'loro-crdt';
 import type { __Project, __Task, FractosRenderer, FractosState, Metadata, ShowState } from "fractos";
-import type { FractosTaskElement } from '../web/task';
+import { taskTag, type FractosTaskElement } from '../web/task';
+import { FractosProjectElement, projectTag } from '../web/project';
 
 
 export class Renderer implements FractosRenderer {
@@ -11,7 +12,7 @@ export class Renderer implements FractosRenderer {
   changeState(el: __Task | __Project, state: ShowState): void {} 
   
   task(data: Metadata, id: TreeID): __Task {
-    const _task = document.createElement('fractos-task') as FractosTaskElement;
+    const _task = document.createElement(taskTag) as FractosTaskElement;
     
     _task.init(this.state);
     _task.setTitle(data.title ?? "");
@@ -27,27 +28,19 @@ export class Renderer implements FractosRenderer {
   }
   
   project(data: Metadata, id: TreeID): __Project {
-    const __root = document.createElement("div");
-    const __title = document.createElement("h1");
-    const __percentage = document.createElement("span");
-    const __description = document.createElement("p");
-    const __tasks = document.createElement("div");
+    const _project = document.createElement(projectTag) as FractosProjectElement;
     
-    __title.innerText = data.title || "";
-    __description.innerText = data.description || "";
-    __percentage.innerText = `${data.percentage || 0}%`;
-    
-    __root.append(__title, __percentage, __description, __tasks)
-    
-    __tasks.classList.add("--ts-childs");
-    __tasks.dataset.treeid = id;
+    _project.init(this.state);
+    _project.setTitle(data.title ?? "");
+    _project.setDescription(data.description ?? "");
+    _project.setPercetage(data.percentage || 0);
     
     return {
-      self: __root,
-      tasks: __tasks,
-      title: (title) => { __title.innerText = title },
-      description: (description) => { __description.innerText = description },
-      percentage: (value) => { __percentage.innerText = `${value}%` },
+      self: _project.root,
+      tasks: _project.tasks,
+      title: (title) => _project.setTitle(title),
+      description: (description) => _project.setDescription(description),
+      percentage: (value) => _project.setPercetage(value),
     }
   }
 }

@@ -244,7 +244,7 @@ export class FractosTaskElement extends HTMLElement {
   
   changePercentage(mode: "up" | "down", step: number = 10) {
     if (!this.state) return
-    if (this.__children.childElementCount > 0) return;
+    if (this.children.length > 0) return;
     
     let percentage = this._percentage;
     if (mode == "up") {
