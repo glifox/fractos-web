@@ -12,7 +12,7 @@ Object.defineProperty(String.prototype, 'dot', {
   configurable: true,
 });
 
-export const task_elements = {
+export const taskElements = {
   root: { class: "--ts-root" },
   title: { class: "--ts-title" },
   content: { class: "--ts-content" },
@@ -21,15 +21,15 @@ export const task_elements = {
   children: { class: "--ts-children" },
 } as const;
 
-type TaskElement = keyof typeof task_elements;
+type TaskElement = keyof typeof taskElements;
 
 const innerHTML = /* html */`
-<div class="${task_elements.content.class}" tabindex="0">
-    <input class="${task_elements.checkbox.class}" type="checkbox"/>
-    <h3 class="${task_elements.title.class}"></h3>
-    <linear-progress class="${task_elements.percentage.class}"></linear-progress>
+<div class="${taskElements.content.class}" tabindex="0">
+    <input class="${taskElements.checkbox.class}" type="checkbox"/>
+    <h3 class="${taskElements.title.class}"></h3>
+    <linear-progress class="${taskElements.percentage.class}"></linear-progress>
 </div>
-<div class="${task_elements.children.class}" style="padding-left: 16px"></div>
+<div class="${taskElements.children.class}" style="padding-left: 16px"></div>
 `;
 
 
@@ -55,14 +55,14 @@ export class FractosTaskElement extends HTMLElement {
   
   constructor() { super()
     this.__root = document.createElement('div');
-    this.__root.classList.add(task_elements.root.class);
+    this.__root.classList.add(taskElements.root.class);
     this.__root.innerHTML = innerHTML;
     
-    this.__title = this.__root.querySelector(task_elements.title.class.dot)! as HTMLElement;
-    this.__content = this.__root.querySelector(task_elements.content.class.dot)! as HTMLElement;
-    this.__checkbox = this.__root.querySelector(task_elements.checkbox.class.dot)! as HTMLElement;
-    this.__percentage = this.__root.querySelector(task_elements.percentage.class.dot) as HTMLElement;
-    this.__children = this.__root.querySelector(task_elements.children.class.dot) as HTMLElement;
+    this.__title = this.__root.querySelector(taskElements.title.class.dot)! as HTMLElement;
+    this.__content = this.__root.querySelector(taskElements.content.class.dot)! as HTMLElement;
+    this.__checkbox = this.__root.querySelector(taskElements.checkbox.class.dot)! as HTMLElement;
+    this.__percentage = this.__root.querySelector(taskElements.percentage.class.dot) as HTMLElement;
+    this.__children = this.__root.querySelector(taskElements.children.class.dot) as HTMLElement;
     
     this.cmTitle = TitleEditor(this.__title, {
       onConfirm: () => { 
