@@ -1,7 +1,7 @@
 import { LoroDoc } from "loro-crdt";
 import { FractosState, FractosView } from "fractos";
 import { Renderer } from "../components/implementations/renderer";
-import { Keymap } from '../keymap/keymap'
+import { Keymap } from '../keymap/handler'
 
 
 const doc = new LoroDoc()
@@ -13,7 +13,7 @@ const view = new FractosView({
   render: new Renderer(state),
 })
 
-const keymap = Keymap(view).subscribe();
+const keymap = Keymap.subscribe(view);
 
 const pr = state.createProject({
   title: "this is not a project",
