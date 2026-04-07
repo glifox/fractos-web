@@ -51,6 +51,7 @@ export class FractosTaskElement extends HTMLElement {
   get root() { return this }
   get tasks() { return this.__children }
   get isEditing() { return this.cmTitle.hasFocus }
+  override tagName: string = taskTag;
   
   constructor() { super()
     this.__root = document.createElement('div');
@@ -129,60 +130,100 @@ export class FractosTaskElement extends HTMLElement {
       title: this.cmTitle.state.doc.toString(),
     })
   }
+  // Selectors
+  override get children() { return this.__children.children }
+  get parentTask(): FractosTaskElement | undefined {
+    const __element = this.parentElement?.closest(taskTag);
+    if (__element) {
+      return (__element as FractosTaskElement)
+    }
+  }
+  get nextTaskSibling(): FractosTaskElement | undefined {
+    const __element = this.nextElementSibling;
+    if (__element && __element.tagName === taskTag) {
+      return __element as FractosTaskElement
+    }
+  }
   
-  override focus(options?: FocusOptions): void { this.__content.focus() }
-  _focus = {
-    firstChild: () => {
-      if (this.__children.children.length > 0) {
-        const task = this.__children.firstElementChild as FractosTaskElement;
-        if (!task) return;
-        
-        task.focus();
-        return true
-      }
-    },
-    nextSibling: () => {
-      const __sibling = this.nextElementSibling;
-      if (__sibling) {
-        (__sibling as FractosTaskElement).focus()
-        return true
-      }
-    },
-    previousSibling: () => {
-      const __prev_sibling = this.previousElementSibling;
-      if (!__prev_sibling) return
-      
-      (__prev_sibling as FractosTaskElement).focus()
-      return true
-    },
-    previousSiblingLastChild: () => {
-      const __prev_sibling = this.previousElementSibling;
-      if (!__prev_sibling) return
-      
-      const __children = (__prev_sibling as FractosTaskElement).__children;
-      if (__children && __children.children.length > 0) {
-        (__children.lastChild as FractosTaskElement).focus()
-        return true
-      }
-    },
-    parentSibling: () => {
-      const parent = this.parentElement?.closest(taskTag);
-      if (!parent) return
-      
-      const parentSibling = parent.nextElementSibling;
-      if (!parentSibling) return
-      
-      (parentSibling as FractosTaskElement).focus()
-      return true
-    },
-    parent: () => {
-      const __parent_root = this.parentElement?.closest(taskTag);
-      if (__parent_root) {
-        (__parent_root as FractosTaskElement).focus()
-        return true
+  get previousTaskSibling(): FractosTaskElement | undefined {
+    const __element = this.previousElementSibling;
+    if (__element && __element.tagName === taskTag) {
+      return __element as FractosTaskElement
+    }
+  }
+  
+  get firstTaskChild(): FractosTaskElement | undefined {
+    for (const __element of this.children) {
+      if (__element && __element.tagName === taskTag) {
+        return __element as FractosTaskElement
       }
     }
   }
+  
+  get lastTaskChild(): FractosTaskElement | undefined {
+    const children = this.children;
+    const last = children.length - 1;
+    for (let i = last; i >= 0; i--) {
+      const __element = children.item(i)
+      if (__element && __element.tagName === taskTag) {
+        return __element as FractosTaskElement
+      }
+    }
+  }
+  
+  // -- Focus
+  override focus(options?: FocusOptions): void { this.__content.focus(options) }
+  _focus = {
+    firstChild: () => {
+      const __firstChild = this.firstTaskChild;
+      if (!__firstChild) return
+      
+      __firstChild.focus();
+      return true
+    },
+    nextSibling: () => {
+      const __sibling = this.nextTaskSibling;
+      if (!__sibling) return
+      
+      __sibling.focus()
+      return true
+    },
+    previousSibling: () => {
+      const __prev_sibling = this.previousTaskSibling;
+      if (!__prev_sibling) return
+      
+      __prev_sibling.focus()
+      return true
+    },
+    previousSiblingLastChild: () => {
+      const __prev_sibling = this.previousTaskSibling;
+      if (!__prev_sibling) return
+      
+      const __lastChild = __prev_sibling.lastTaskChild;
+      if (!__lastChild) return
+      
+      __lastChild.focus()
+      return true
+    },
+    parentSibling: () => {
+      const __parent = this.parentTask;
+      if (!__parent) return
+      
+      const __parentSibling = __parent.nextTaskSibling;
+      if (!__parentSibling) return
+      
+      __parentSibling.focus()
+      return true
+    },
+    parent: () => {
+      const __parent = this.parentTask;
+      if (!__parent) return
+      
+      __parent.focus()
+      return true
+    }
+  }
+  
   focusGerarquicalNextTask() {
     if (this._focus.firstChild()) return;
     if (this._focus.nextSibling()) return;

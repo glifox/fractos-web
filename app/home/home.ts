@@ -57,3 +57,9 @@ state.update({
   type: "task",
   title: "como?",
 })
+
+state.createTask({
+  title: "third task",
+  description: "Si señor",
+  percentage: 60,
+}, pr)

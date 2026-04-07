@@ -9,7 +9,7 @@
 }
 
 /*Desabilita los hijos*/
-.--ts-root:has(> div > :checked) .--ts-childs { 
+.--ts-root:has(> div > :checked) .--ts-children { 
     pointer-events: none;
     opacity: 0.6;
 }
