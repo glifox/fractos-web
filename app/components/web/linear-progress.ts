@@ -16,6 +16,7 @@ class LinearProgress extends HTMLElement {
           --lp-border-color: transparent;
           --lp-border-width: 0;
           --lp-width: 5rem;
+          --lp-height: 1.2lh;
           --lp-duration: 0.4s;
 
           display: inline-block;
@@ -33,7 +34,7 @@ class LinearProgress extends HTMLElement {
           border: var(--lp-border-width) solid var(--lp-border-color);
           
           width: var(--lp-width);
-          height: 1.2lh;
+          height: var(--lp-height);
           font-size: 0.8rem;
           white-space: nowrap;
           padding-left: 0.5rem;
@@ -46,7 +47,7 @@ class LinearProgress extends HTMLElement {
         .progress::before {
           display: inline-flex;
           align-items: center;
-          padding-left: 0.5rem;
+          padding-left: 0rem;
           
           color: var(--lp-text-fill);
           overflow: hidden;
