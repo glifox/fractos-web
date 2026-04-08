@@ -254,10 +254,21 @@ export class FractosTaskElement extends HTMLElement {
     if (this._focus.firstChild()) return true;
     if (this._focus.nextSibling()) return true;
     if (this._focus.parentSibling()) return true;
+    
+    let __parent = this.parentTask;
+    while (__parent) {
+      if (__parent._focus.parentSibling()) return true;
+      __parent = __parent.parentTask;
+    }
   }
   
   focusGerarquicalPreviousTask() {
-    if (this._focus.previousSiblingLastChild()) return true;
+    let __element = this.previousTaskSibling;
+    while (__element && __element.lastTaskChild) __element = __element.lastTaskChild;
+    if (__element) {
+      __element.focus()
+      return true
+    };
     if (this._focus.previousSibling()) return true;
     if (this._focus.parent()) return true;
   }
