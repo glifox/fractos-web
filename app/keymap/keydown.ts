@@ -60,11 +60,31 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       return
     }
   },
+  'd': (e, c, v) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      e.preventDefault()
+      if (!c.task.focusGerarquicalPreviousTask()) c.task.focusGerarquicalNextTask()
+      v.state.delete(c.task.treeid)
+      return
+    }
+  },
   'escape': (e, c) => {
     if (c.task && c.task.isEditing) {
       e.preventDefault()
       c.task.focus()
       return
     }
-  }
+  },
+  // 'tab': (e, c, v) => { // TODO cuando se añadan los eventos de move
+  //   if (c.task) {
+  //     if (c.task.isEditing) return
+  //     e.preventDefault()
+      
+  //     const __prevSibling = c.task.previousTaskSibling;
+  //     if (!__prevSibling) return;
+      
+  //     v.state.moveTask(c.task.treeid, __prevSibling.treeid)
+  //   }
+  // },
 })

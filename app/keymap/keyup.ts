@@ -34,4 +34,27 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       return
     }
   },
+  'shift-enter': (e, c, v) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      const newTask = document.createElement(taskTag) as FractosTaskElement;
+      
+      newTask.init(v.state, {
+        onConfirm: (ev) => {
+          newTask.id = v.state.createTask({
+            title: ev.state.doc.toString(),
+            description: ""
+          }, c.task!.treeid)
+          
+          requestAnimationFrame(() => newTask.focus())
+        },
+        onCancel: () => newTask.remove()
+      })
+      
+      c.task.tasks.appendChild(newTask)
+      newTask.editTitle()
+      
+      return
+    }
+  },
 })
