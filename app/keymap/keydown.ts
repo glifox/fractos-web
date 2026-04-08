@@ -15,7 +15,12 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
   'ArrowUp': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
-      c.task.focusGerarquicalPreviousTask()
+      if (c.task.focusGerarquicalPreviousTask()) return
+    }
+    
+    if (c.project) { // Temporal
+      if (!c.task && c.project.previousProjectSibling?._focus.lastTaskChild()) return
+      c.project.previousProjectSibling?.focus()
       return
     }
     
@@ -24,7 +29,12 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
   'ArrowDown': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
-      c.task.focusGerarquicalNextTask()
+      if (c.task.focusGerarquicalNextTask()) return
+    }
+    
+    if (c.project) { // Temporal
+      if (!c.task && c.project._focus.firstTaskChild()) return
+      c.project.nextProjectSibling?.focus()
       return
     }
     

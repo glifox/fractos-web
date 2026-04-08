@@ -1,17 +1,22 @@
 import type { FractosState } from "fractos";
 import type { TreeID } from "loro-crdt";
+import { taskTag, type FractosTaskElement } from "./task";
 
 
 export const projectElements = {
   root: { class: "--pr-root" },
   title: { class: "--pr-title" },
+  focus: { class: "--pr-focusable" },
   description: { class: "--pr-description" },
   percentage: { class: "--pr-percentage" },
   children: { class: "--pr-children" },
 } as const;
 
+type ProjectElement = keyof typeof projectElements;
+
 const innerHTML = /* html */`
   <h2 class="${projectElements.title.class}"></h2>
+  <div class="${projectElements.focus.class}" tabindex="0">focus</div>
   <span class="${projectElements.percentage.class}"></span>
   <p class="${projectElements.description.class}"></p>
   <div class="${projectElements.children.class}"></div>
@@ -23,8 +28,10 @@ export class FractosProjectElement extends HTMLElement {
   private __description: HTMLElement;
   private __percentage: HTMLElement;
   private __children: HTMLElement;
+  private __focus: HTMLElement;
   
   private state?: FractosState;
+  override tagName: string = projectTag;
   
   get treeid() { return this.id as TreeID };
   get root() { return this }
@@ -36,9 +43,12 @@ export class FractosProjectElement extends HTMLElement {
     this.__root.classList.add(projectElements.root.class);
     
     this.__title = this.__root.querySelector(projectElements.title.class.dot) as HTMLElement;
+    this.__focus = this.__root.querySelector(projectElements.focus.class.dot) as HTMLElement;
     this.__description = this.__root.querySelector(projectElements.description.class.dot) as HTMLElement;
     this.__percentage = this.__root.querySelector(projectElements.percentage.class.dot) as HTMLElement;
     this.__children = this.__root.querySelector(projectElements.children.class.dot) as HTMLElement;
+    
+    this.setEvents();
   }
   
   init(state: FractosState) {
@@ -53,6 +63,86 @@ export class FractosProjectElement extends HTMLElement {
   }
   setDescription = (description: string) => {
     this.__description.innerText = description;
+  }
+  
+  // Focus
+  override focus(options?: FocusOptions) { this.__focus.focus(options) }
+  _focus = {
+    firstTaskChild: () => {
+      const __element = this.firstTaskChild;
+      if (!__element) return
+      
+      __element.focus()
+      return true
+    },
+    lastTaskChild: () => {
+      const __element = this.lastTaskChild;
+      if (!__element) return
+      
+      __element.focus()
+      return true
+    }
+    
+  }
+  
+  // Internals
+  private events: { [Z in ProjectElement]?: { [K in keyof HTMLElementEventMap]?: EventListener } } = {
+  }
+  
+  private setEvents() {
+    const elements: { [Z in ProjectElement]: HTMLElement } = {
+      root: this.__root,
+      title: this.__title,
+      focus: this.__focus,
+      percentage: this.__percentage,
+      children: this.__children,
+      description: this.__description
+    }
+    
+    for (const element of Object.keys(elements)) {
+      if (element in this.events) {
+        // @ts-ignore
+        for (const event of Object.keys(this.events[element])) {
+          // @ts-ignore
+          elements[element].addEventListener(event, this.events[element][event])
+        }
+      }
+    }
+  }
+  
+  // Selectors
+  override get children() { return this.__children.children }
+  get nextProjectSibling(): FractosProjectElement | undefined {
+    const __element = this.nextElementSibling;
+    if (__element && __element.tagName === projectTag) {
+      return __element as FractosProjectElement
+    }
+  }
+  
+  get previousProjectSibling(): FractosProjectElement | undefined {
+    const __element = this.previousElementSibling;
+    if (__element && __element.tagName === projectTag) {
+      return __element as FractosProjectElement
+    }
+  }
+  
+  get firstTaskChild(): FractosTaskElement | undefined {
+    for (const __element of this.children) {
+      if (__element && __element.tagName === taskTag) {
+        return __element as FractosTaskElement
+      }
+    }
+  }
+  
+  get lastTaskChild(): FractosTaskElement | undefined {
+    const children = this.children;
+    const last = children.length - 1;
+    for (let i = last; i >= 0; i--) {
+      const __element = children.item(i)
+      if (__element && __element.tagName === taskTag) {
+        return __element as FractosTaskElement
+      }
+    }
   }
 }
 
