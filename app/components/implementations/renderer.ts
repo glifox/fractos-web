@@ -12,11 +12,14 @@ export class Renderer implements FractosRenderer {
   changeState(el: __Task | __Project, state: ShowState): void {} 
   
   task(data: Metadata, id: TreeID): __Task {
-    const _task = document.createElement(taskTag) as FractosTaskElement;
-    
-    _task.init(this.state);
-    _task.setTitle(data.title ?? "");
-    if (data.percentage) _task.setPercentage(data.percentage);
+    let _task = document.getElementById(id) as FractosTaskElement;
+    if (!_task) {
+      _task = document.createElement(taskTag) as FractosTaskElement;
+      
+      _task.init(this.state);
+      _task.setTitle(data.title ?? "");
+      if (data.percentage) _task.setPercentage(data.percentage);
+    }
     
     return {
       self: _task.root,

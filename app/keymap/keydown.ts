@@ -11,8 +11,8 @@ const keymap = {
   }
 }
 
-export const keyboardHandler = createKeybindingsHandler<[FractosView, Context]>({
-  'ArrowUp': (e, v, c) => {
+export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>({
+  'ArrowUp': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
       c.task.focusGerarquicalPreviousTask()
@@ -21,7 +21,7 @@ export const keyboardHandler = createKeybindingsHandler<[FractosView, Context]>(
     
     (Array.from(document.getElementsByTagName(taskTag)).pop() as FractosTaskElement).focus()
   },
-  'ArrowDown': (e, v, c) => {
+  'ArrowDown': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
       c.task.focusGerarquicalNextTask()
@@ -30,25 +30,41 @@ export const keyboardHandler = createKeybindingsHandler<[FractosView, Context]>(
     
     (document.getElementsByTagName(taskTag)[0] as FractosTaskElement).focus()
   },
-  'Space': (e, v, c) => {
+  'Space': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
       c.task.toggleCheck(true)
       return
     }
   },
-  'shift-arrowup': (e, v, c) => {
+  'shift-arrowup': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
       c.task.changePercentage("up")
       return
     }
   },
-  'shift-arrowdown': (e, v, c) => {
+  'shift-arrowdown': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
       c.task.changePercentage("down")
       return
     }
   },
+  'e': (e, c) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      c.task.editTitle()
+      return
+    }
+  },
+  'escape': (e, c) => {
+    if (c.task && c.task.isEditing) {
+      e.preventDefault()
+      c.task.focus()
+      return
+    }
+  }
 })

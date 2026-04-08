@@ -1,10 +1,10 @@
 import "../web/linear-progress";
-import { TitleEditor } from "../class/title";
+import { TitleEditor, type Callbacks } from "../class/title";
 
 import type { EditorView } from "codemirror";
 import type { FractosState, TaskData } from "fractos";
 import type { TreeID } from "loro-crdt";
-import { Transaction } from "@codemirror/state";
+import { EditorSelection, Transaction } from "@codemirror/state";
 
 declare global { interface String { readonly dot: string; } }
 Object.defineProperty(String.prototype, 'dot', {
@@ -56,6 +56,8 @@ export class FractosTaskElement extends HTMLElement {
   get checked() { return this.__checkbox.checked }
   private set checked(value: boolean) { this.__checkbox.checked = value }
   
+  private callbacks?: Callbacks;
+  
   constructor() { super()
     this.__root = document.createElement('div');
     this.__root.classList.add(taskElements.root.class);
@@ -68,22 +70,39 @@ export class FractosTaskElement extends HTMLElement {
     this.__children = this.__root.querySelector(taskElements.children.class.dot) as HTMLElement;
     
     this.cmTitle = TitleEditor(this.__title, {
-      onConfirm: _ => { 
-        this.updateTitle()
-        this.focus()
+      onConfirm: (view, inital) => { 
+        if (this.id) {
+          this.updateTitle()
+          this.focus()
+          return;
+        }
+        else
+        if (this.callbacks?.onConfirm) {
+          this.callbacks.onConfirm(view, inital)
+          this.callbacks = undefined;
+        }
       },
-      onCancel: (_, inital) => {
-        this.setTitle(inital)
-        this.focus()
+      onCancel: (view, inital) => {
+        if (this.id) {
+          this.setTitle(inital)
+          this.focus()
+          return;
+        }
+        else
+        if (this.callbacks?.onCancel) {
+          this.callbacks.onCancel(view,inital)
+          this.callbacks = undefined;
+        }
       },
     });
     
     this.setEvents()
   }
   
-  init(state: FractosState) {
+  init(state: FractosState, callbacks?: Callbacks) {
     this.state = state;
-    this.appendChild(this.__root)
+    this.appendChild(this.__root);
+    this.callbacks = callbacks;
   }
   setTitle = (title: string) => {
     this.cmTitle.dispatch({
@@ -241,6 +260,13 @@ export class FractosTaskElement extends HTMLElement {
     if (this._focus.previousSiblingLastChild()) return true;
     if (this._focus.previousSibling()) return true;
     if (this._focus.parent()) return true;
+  }
+  
+  editTitle() {
+    this.cmTitle.focus()
+    this.cmTitle.dispatch({
+      selection: EditorSelection.cursor(this.cmTitle.state.doc.length)
+    })
   }
   
   toggleCheck(invert: boolean = false) {

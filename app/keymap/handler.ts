@@ -48,9 +48,9 @@ const handler = (e: KeyboardEvent, type: PressType, view: FractosView) => {
   const panel = getContext.panel(e);
   if (panel) context.panel = panel;
   
-  if (type == "down") keyboardHandlerDown(e, view, context)
+  if (type == "down") keyboardHandlerDown(e, context, view)
   else
-  if (type == "up") keyboardHandlerUp(e, view, context)
+  if (type == "up") keyboardHandlerUp(e, context, view)
 }
 
 

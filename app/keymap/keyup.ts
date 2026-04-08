@@ -7,8 +7,8 @@ import type { FractosProjectElement } from "../components/web/project"
 // import { taskTag, type FractosTaskElement } from "../components/web/task"
 
 
-export const keyboardHandler = createKeybindingsHandler<[FractosView, Context]>({
-  'enter': (e, v, c) => {
+export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>({
+  'enter': (e, c, v) => {
     if (c.task) {
       if (c.task.isEditing) return
       let parent: FractosTaskElement | FractosProjectElement | undefined = c.task.parentTask;
@@ -16,10 +16,20 @@ export const keyboardHandler = createKeybindingsHandler<[FractosView, Context]>(
       
       const newTask = document.createElement(taskTag) as FractosTaskElement;
       
-      newTask.init(v.state)
-      parent.tasks.appendChild(newTask)
+      newTask.init(v.state, {
+        onConfirm: (ev) => {
+          newTask.id = v.state.createTask({
+            title: ev.state.doc.toString(),
+            description: ""
+          }, parent.treeid)
+          
+          requestAnimationFrame(() => newTask.focus())
+        },
+        onCancel: () => newTask.remove()
+      })
       
-      newTask.focus()
+      parent.tasks.appendChild(newTask)
+      newTask.editTitle()
       
       return
     }
