@@ -42,6 +42,8 @@ document.getElementById('save')!.addEventListener('click', _ => {
 store.get('dev-test').then(v => {
   if (v) doc.import(v);
   
+  document.querySelector('.loader')?.remove()
+  
   const state = new FractosState({ doc });
   const view = new FractosView({
     state: state,
