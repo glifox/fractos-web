@@ -43,6 +43,7 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
   'Space': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
+      e.preventDefault()
       c.task.toggleCheck(true)
       return
     }
