@@ -30,4 +30,25 @@ export const keyboardHandler = createKeybindingsHandler<[FractosView, Context]>(
     
     (document.getElementsByTagName(taskTag)[0] as FractosTaskElement).focus()
   },
+  'Space': (e, v, c) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      c.task.toggleCheck(true)
+      return
+    }
+  },
+  'shift-arrowup': (e, v, c) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      c.task.changePercentage("up")
+      return
+    }
+  },
+  'shift-arrowdown': (e, v, c) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      c.task.changePercentage("down")
+      return
+    }
+  },
 })

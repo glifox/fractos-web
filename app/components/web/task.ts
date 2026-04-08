@@ -37,7 +37,7 @@ export class FractosTaskElement extends HTMLElement {
   private __root: HTMLElement;
   private __title: HTMLElement;
   private __content: HTMLElement;
-  private __checkbox: HTMLElement;
+  private __checkbox: HTMLInputElement;
   private __percentage: HTMLElement;
   private __children: HTMLElement;
   
@@ -45,13 +45,16 @@ export class FractosTaskElement extends HTMLElement {
   private state?: FractosState;
 
   private _percentage: number = 0;
+  override tagName: string = taskTag;
   get percentage() { return this._percentage }
   
   get treeid() { return this.id as TreeID };
   get root() { return this }
   get tasks() { return this.__children }
   get isEditing() { return this.cmTitle.hasFocus }
-  override tagName: string = taskTag;
+  
+  get checked() { return this.__checkbox.checked }
+  private set checked(value: boolean) { this.__checkbox.checked = value }
   
   constructor() { super()
     this.__root = document.createElement('div');
@@ -60,15 +63,19 @@ export class FractosTaskElement extends HTMLElement {
     
     this.__title = this.__root.querySelector(taskElements.title.class.dot)! as HTMLElement;
     this.__content = this.__root.querySelector(taskElements.content.class.dot)! as HTMLElement;
-    this.__checkbox = this.__root.querySelector(taskElements.checkbox.class.dot)! as HTMLElement;
+    this.__checkbox = this.__root.querySelector(taskElements.checkbox.class.dot)! as HTMLInputElement;
     this.__percentage = this.__root.querySelector(taskElements.percentage.class.dot) as HTMLElement;
     this.__children = this.__root.querySelector(taskElements.children.class.dot) as HTMLElement;
     
     this.cmTitle = TitleEditor(this.__title, {
-      onConfirm: () => { 
+      onConfirm: _ => { 
+        this.updateTitle()
         this.focus()
       },
-      onCancel: () => { },
+      onCancel: (_, inital) => {
+        this.setTitle(inital)
+        this.focus()
+      },
     });
     
     this.setEvents()
@@ -86,8 +93,8 @@ export class FractosTaskElement extends HTMLElement {
   }
   
   setPercentage  = (percentage: number) => {
-    if (percentage == 100) (this.__checkbox as HTMLInputElement).checked = true; 
-    else if (percentage < 100 && percentage >= 0) (this.__checkbox as HTMLInputElement).checked = false; 
+    if (percentage == 100) this.checked = true; 
+    else if (percentage < 100 && percentage >= 0) this.checked = false; 
     else throw Error(`[class::task] Invalid value of percentage: '${percentage}'`)
     
     this.__percentage.dataset.percentage = `${percentage}`;
@@ -225,15 +232,15 @@ export class FractosTaskElement extends HTMLElement {
   }
   
   focusGerarquicalNextTask() {
-    if (this._focus.firstChild()) return;
-    if (this._focus.nextSibling()) return;
-    if (this._focus.parentSibling()) return;
+    if (this._focus.firstChild()) return true;
+    if (this._focus.nextSibling()) return true;
+    if (this._focus.parentSibling()) return true;
   }
   
   focusGerarquicalPreviousTask() {
-    if (this._focus.previousSiblingLastChild()) return;
-    if (this._focus.previousSibling()) return;
-    if (this._focus.parent()) return;
+    if (this._focus.previousSiblingLastChild()) return true;
+    if (this._focus.previousSibling()) return true;
+    if (this._focus.parent()) return true;
   }
   
   toggleCheck(invert: boolean = false) {

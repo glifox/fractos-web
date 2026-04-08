@@ -4,12 +4,13 @@ import { taskTag, type FractosTaskElement } from "../components/web/task";
 
 
 import type { FractosView } from "fractos";
+import { projectTag, type FractosProjectElement } from "../components/web/project";
 
 type PressType = "up" | "down";
 
 export type ContextNode = {
   panel: HTMLElement;
-  project: HTMLDivElement;
+  project: FractosProjectElement;
   task: FractosTaskElement;
 };
 
@@ -26,7 +27,8 @@ const getContext: {
     if (panel) return panel as HTMLElement
   },
   project: (e) => {
-    
+    const project = (e.target as HTMLElement).closest(projectTag);
+    if (project) return project as FractosProjectElement;
   },
   task: (e) => {
     const task = (e.target as HTMLElement).closest(taskTag);
