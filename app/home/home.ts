@@ -7,8 +7,35 @@ import { Keymap } from '../keymap/handler'
 const store = new LocalDatabase();
 
 const doc = new LoroDoc()
-doc.subscribe(() => {
-  store.set('dev-test', doc.export({ mode: "snapshot" })).then(() => {  } )
+document.getElementById('save')!.addEventListener('click', _ => {
+  store.set('dev-test', doc.export({ mode: "snapshot" })).then(() => { 
+    const button = document.getElementById('save')! as HTMLButtonElement;
+    
+    console.info("button:", button);
+    button.innerText = '🚀 Saved!!!!'
+    button.disabled = true;
+    
+    let timeoutId: number | null = null;
+    
+    function startTimer() {
+      const startTime = Date.now();
+      
+      const timeoutHandler = () => {
+        if (Date.now() - startTime >= 600) {
+          button.innerText = 'save'
+          button.disabled = false;
+          window.cancelAnimationFrame(timeoutId!);
+        } else {
+          timeoutId = requestAnimationFrame(timeoutHandler);
+        }
+      };
+    
+      timeoutId = requestAnimationFrame(timeoutHandler);
+    }
+    
+    startTimer();
+    
+  } )
 })
 
 
