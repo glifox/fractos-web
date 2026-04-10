@@ -1,7 +1,3 @@
-body {
-    color: var(--fg-brigth);
-    background-color: var(--bg-dark);
-}
 
 .--ts-content {
     border-radius: 0.5rem;

@@ -4,17 +4,21 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>[fractos] Home </title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/gh/feraxjs/thselector@v0.1.0/src/core.js"></script>
+    <link rel="stylesheet" href="styles/layout.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/dark/mocha.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/light/latte.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="home.ts" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/gh/feraxjs/thselector@v0.1.0/src/core.js"></script>
 </head>
 <body>
-    <button id="save">save</button>
-    <section class="side panel"></section>
-    <section class="main panel" id="view">
+    <section class="side panel">
+        <button id="save">save</button>
+    </section>
+        
+    <section class="main panel">
         <div class="loader"></div>
+        <div id="view"></div>
     </section>
 </body>
 </html>
