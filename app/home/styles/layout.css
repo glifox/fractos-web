@@ -18,11 +18,11 @@ body {
 }
 
 .side {
-    background-color: var(--bg-muted);
+    background-color: var(--bg-dark);
 }
 
 .main, body {
-    background-color: var(--bg-dark);
+    background-color: var(--bg-muted);
 }
 
 .main {
