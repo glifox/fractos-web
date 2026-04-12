@@ -1,66 +1,36 @@
 
-.--ts-content {
-    border-radius: 0.5rem;
-    border: 2px solid var(--bd-dark);
+.--pr-root {
     background-color: var(--bg-light);
-    
-    box-shadow: 9px 9px 9px -15px rgba(0,0,0,0.46);
-    -webkit-box-shadow: 9px 9px 9px -15px rgba(0,0,0,0.46);
-    -moz-box-shadow: 9px 9px 9px -15px rgba(0,0,0,0.46);
-
-    padding: 4px;
-    padding-right: 16px;
-    margin: 4px;
-    margin-right: 0;
+    border-radius: 8px;
+    margin-top: 26px;
+    padding: 16px;
 }
 
-.--ts-root {
-    position: relative;
-}
-
-/*.--ts-root:has(.--ts-children .--ts-content ) > .--ts-content {*/
-/*position: sticky;*/
-/*top: 16px;*/
-/*z-index: +1;*/
-/*background-color: green;*/
-/*}*/
-
-.--ts-children .--ts-root::before {
-    position: absolute;
-    content: "";
-
-    height: 100%;
-    width: 2px;
-
-    left: -1ch;
-
-    border-radius: 999px;
-    background-color: var(--bg-muted);
-}
-
-.--ts-root:has( > .--ts-content:focus )::before {
-    background-color: var(--bd-dark);
-}
-
-/*Desabilita los hijos*/
-.--ts-root:has(> div > :checked) .--ts-children {
-    pointer-events: none;
-    opacity: 0.6;
+.--ts-checkbox {
+    display: inline;
 }
 
 .--ts-content {
     display: flex;
-    align-items: center;
+    justify-items: center;
+    
+    margin-top: 8px;
+    border-radius: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
-.--ts-content:focus-visible {
+.--ts-content:focus {
     outline: unset;
-    border-color: var(--sm-bd-success);
+    background-color: var(--sm-bg-info);
 }
 
 .--ts-title {
     flex-grow: 1;
+    display: inline-block;
+    margin: 0;
 }
+
 
 .--ts-percentage {
     --lp-bg: var(--bg-dark);
@@ -76,6 +46,7 @@
     --lp-width: 6rem;
     --lp-duration: 0.4s;
 }
+
 
 /* HTML: <div class="loader"></div> */
 .loader {
