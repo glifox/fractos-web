@@ -15,6 +15,7 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
   'ArrowUp': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
+      e.preventDefault()
       if (c.task.focusGerarquicalPreviousTask()) return
     }
     
@@ -29,6 +30,7 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
   'ArrowDown': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
+      e.preventDefault()
       if (c.task.focusGerarquicalNextTask()) return
     }
     
@@ -51,6 +53,7 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
   'shift-arrowup': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
+      e.preventDefault()
       c.task.changePercentage("up")
       return
     }
@@ -58,6 +61,7 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
   'shift-arrowdown': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
+      e.preventDefault()
       c.task.changePercentage("down")
       return
     }
