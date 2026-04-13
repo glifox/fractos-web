@@ -34,6 +34,7 @@ export const TitleEditor = (
     doc: ``,
     extensions: [
       minimalSetup,
+      EditorView.lineWrapping,
       EditorState.transactionFilter.of(
         tr => tr.newDoc.lines > 1 ? [] : [tr]
       ),
