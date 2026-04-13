@@ -2,6 +2,7 @@ import { createKeybindingsHandler } from "@glifox/desmos";
 import { EditorView, minimalSetup } from "codemirror";
 import { EditorSelection, EditorState } from "@codemirror/state";
 import { placeholder } from "@codemirror/view";
+import { gnosis } from "@glifox/gnosis";
 
 export type Callbacks = {
   onConfirm: (view: EditorView, initialValue: string) => void,
@@ -36,8 +37,27 @@ export const TitleEditor = (
       EditorState.transactionFilter.of(
         tr => tr.newDoc.lines > 1 ? [] : [tr]
       ),
+      gnosis(),
       placeholder("Task title..."),
       EditorView.domEventHandlers({
+        'mousedown': (e, v) => {
+          if (v.hasFocus) return false
+          e.preventDefault()
+          return true
+        },
+        'dblclick': (e, v) => {
+          if (v.hasFocus) return false
+          e.preventDefault()
+          
+          v.focus()
+          const pos = v.posAtCoords({
+            x: e.clientX,
+            y: e.clientY,
+          }, false)
+          v.dispatch({ selection: EditorSelection.cursor(pos) })
+          
+          return true
+        },
         'keyup': keyup_,
         'focusin': (_, v) => {
           initalValue = v.state.doc.toString();
