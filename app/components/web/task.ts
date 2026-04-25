@@ -105,11 +105,15 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
     this.setEvents()
   }
   
-  init(state: FractosState, node: FractosNode, callbacks?: Callbacks) {
+  init(state: FractosState, node: FractosNode) {
     this.state = state;
     this.appendChild(this.__root);
     this.dataset.treeid = node.treeid;
-    this.callbacks = callbacks;
+  }
+  
+  new(callbacks?: Callbacks) {
+    this.appendChild(this.__root);
+    this.callbacks = callbacks
   }
   
   set<P extends keyof TaskData>(key: keyof TaskData, value: TaskData[P]): void {

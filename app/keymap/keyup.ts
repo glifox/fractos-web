@@ -9,12 +9,14 @@ import type { FractosProjectElement } from "../components/web/project"
 const newTask = (state: FractosState, parent: FractosProjectElement | FractosTaskElement) => {
   const newTask = document.createElement(taskTag) as FractosTaskElement;
   
-  newTask.init(state, {
+  newTask.new({
     onConfirm: (ev) => {
-      newTask.id = state.createTask({
+      newTask.id = state.create({
+        type: 'task',
+        parent: parent.treeid,
         title: ev.state.doc.toString(),
         description: ""
-      }, parent.treeid)
+      })
       
       requestAnimationFrame(() => {
         newTask.focus()

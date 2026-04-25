@@ -18,8 +18,12 @@ export const renderer: FractosRenderer = {
     return _project
   },
   task: (view, node) => {
-    const _task = document.createElement(taskTag) as FractosTaskElement;
+    const __task = document.getElementById(node.treeid);
+    const _task = (__task)
+      ? __task as FractosTaskElement
+      : document.createElement(taskTag) as FractosTaskElement;
     
+    _task.id = node.treeid;
     _task.init(view.state, node);
     _task.setTitle(node.get('title'));
     _task.setPercentage(node.get('percentage') ?? 0);
