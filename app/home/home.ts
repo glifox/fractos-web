@@ -1,7 +1,7 @@
 import { LocalDatabase } from "../storage/indexed";
 import { LoroDoc } from "loro-crdt";
 import { FractosState, FractosView } from "fractos";
-import { Renderer } from "../components/implementations/renderer";
+import { renderer } from "../components/implementations/renderer";
 import { Keymap } from '../keymap/handler'
 
 const store = new LocalDatabase();
@@ -48,23 +48,26 @@ store.get('dev-test').then(v => {
   const view = new FractosView({
     state: state,
     parent: document.getElementById("view")!,
-    render: new Renderer(state),
+    renderer,
   })
   
   const keymap = Keymap.subscribe(view);
 })
 
-// const pr = state.createProject({
+// const pr = state.create({
+//   type: 'project',
 //   title: "this is not a project",
 //   description: "Just kidding, it is",
 // })
 
 
-// state.createTask({
+// state.create({
+//   type: 'task',
+//   parent: pr,
 //   title: "llamar a jesus",
 //   description: "Si señor",
 //   percentage: 20,
-// }, pr)
+// })
 
 
 // const ts = state.createTask({

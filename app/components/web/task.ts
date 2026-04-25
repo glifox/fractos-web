@@ -2,7 +2,7 @@ import "../web/linear-progress";
 import { TitleEditor, type Callbacks } from "../class/title";
 
 import type { EditorView } from "codemirror";
-import type { FractosState, TaskData } from "fractos";
+import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type TaskData } from "fractos";
 import type { TreeID } from "loro-crdt";
 import { EditorSelection, Transaction } from "@codemirror/state";
 
@@ -33,7 +33,9 @@ const innerHTML = /* html */`
 `;
 
 
-export class FractosTaskElement extends HTMLElement {
+export class FractosTaskElement extends HTMLElement implements Node<'task'> {
+  type = "task" as const;
+  
   private __root: HTMLElement;
   private __title: HTMLElement;
   private __content: HTMLElement;
@@ -43,13 +45,15 @@ export class FractosTaskElement extends HTMLElement {
   
   private cmTitle: EditorView;
   private state?: FractosState;
+  compositor: Compositor;
+  showChildren: boolean = true;
 
   private _percentage: number = 0;
   override tagName: string = taskTag;
   get percentage() { return this._percentage }
   
-  get treeid() { return this.id as TreeID };
-  get root() { return this }
+  get treeid() { return this.dataset.treeid as TreeID };
+  get element() { return this }
   get tasks() { return this.__children }
   get isEditing() { return this.cmTitle.hasFocus }
   
@@ -96,14 +100,31 @@ export class FractosTaskElement extends HTMLElement {
       },
     });
     
+    this.compositor = new FractosCompositor(this.__children);
+    
     this.setEvents()
   }
   
-  init(state: FractosState, callbacks?: Callbacks) {
+  init(state: FractosState, node: FractosNode, callbacks?: Callbacks) {
     this.state = state;
     this.appendChild(this.__root);
+    this.dataset.treeid = node.treeid;
     this.callbacks = callbacks;
   }
+  
+  set<P extends keyof TaskData>(key: keyof TaskData, value: TaskData[P]): void {
+    if (key === 'title') this.setTitle(value as string);
+    
+    else
+    if (key === 'percentage') this.setPercentage(value as number);
+  
+    // else
+    // if (key == 'description') this.setDescription(value as );
+  }
+  updateIndex(): void {
+    
+  }
+  
   setTitle = (title: string) => {
     this.cmTitle.dispatch({
       changes: { from: 0, insert: title, to: this.cmTitle.state.doc.length },
@@ -151,8 +172,8 @@ export class FractosTaskElement extends HTMLElement {
   // Actions
   private updateTitle() {
     this.state?.update({
-      id: this.id as TreeID,
       type: "task",
+      id: this.id as TreeID,
       title: this.cmTitle.state.doc.toString(),
     })
   }

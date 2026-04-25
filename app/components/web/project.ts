@@ -1,4 +1,4 @@
-import type { FractosState } from "fractos";
+import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type ProjectData } from "fractos";
 import type { TreeID } from "loro-crdt";
 import { taskTag, type FractosTaskElement } from "./task";
 
@@ -22,7 +22,7 @@ const innerHTML = /* html */`
   <div class="${projectElements.children.class}"></div>
 `;
 
-export class FractosProjectElement extends HTMLElement {
+export class FractosProjectElement extends HTMLElement implements Node<'project'> {
   private __root: HTMLElement;
   private __title: HTMLElement;
   private __description: HTMLElement;
@@ -33,11 +33,16 @@ export class FractosProjectElement extends HTMLElement {
   private state?: FractosState;
   override tagName: string = projectTag;
   
-  get treeid() { return this.id as TreeID };
-  get root() { return this }
+  type = "project" as const;
+  compositor: Compositor;
+  showChildren: boolean = true;
+  
+  get treeid() { return this.dataset.treeid as TreeID };
+  get element() { return this }
   get tasks() { return this.__children }
   
   constructor() { super()
+    
     this.__root = document.createElement('div');
     this.__root.innerHTML = innerHTML;
     this.__root.classList.add(projectElements.root.class);
@@ -48,13 +53,31 @@ export class FractosProjectElement extends HTMLElement {
     this.__percentage = this.__root.querySelector(projectElements.percentage.class.dot) as HTMLElement;
     this.__children = this.__root.querySelector(projectElements.children.class.dot) as HTMLElement;
     
+    this.compositor = new FractosCompositor(this.__children);
+    
     this.setEvents();
   }
   
-  init(state: FractosState) {
+  init(state: FractosState, node: FractosNode) {
     this.state = state;
     this.appendChild(this.__root);
+    this.dataset.treeid = node.treeid;
   }
+  
+  set<P extends keyof ProjectData>(key: keyof ProjectData, value: ProjectData[P]): void {
+    if (key === 'title') this.setTitle(value);
+    
+    else
+    // @ts-ignore
+    if (key === 'percentage') this.setPercetage(value);
+  
+    else
+    if (key == 'description') this.setDescription(value);
+  }
+  updateIndex(): void {
+    
+  }
+  
   setTitle = (title: string) => {
     this.__title.innerText = title;
   }
