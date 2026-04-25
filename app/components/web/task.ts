@@ -75,7 +75,7 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
     
     this.cmTitle = TitleEditor(this.__title, {
       onConfirm: (view, inital) => { 
-        if (this.id) {
+        if (this.treeid) {
           this.updateTitle()
           this.focus()
           return;
@@ -87,7 +87,7 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
         }
       },
       onCancel: (view, inital) => {
-        if (this.id) {
+        if (this.treeid) {
           this.setTitle(inital)
           this.focus()
           return;
@@ -173,7 +173,7 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
   private updateTitle() {
     this.state?.update({
       type: "task",
-      id: this.id as TreeID,
+      id: this.treeid,
       title: this.cmTitle.state.doc.toString(),
     })
   }
