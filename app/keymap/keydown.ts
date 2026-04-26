@@ -95,16 +95,17 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
     e.preventDefault()
     if (c.task && c.task.isEditing) return;
     (document.getElementById('save') as HTMLButtonElement)?.click()
-  }
-  // 'tab': (e, c, v) => { // TODO cuando se añadan los eventos de move
-  //   if (c.task) {
-  //     if (c.task.isEditing) return
-  //     e.preventDefault()
+  },
+  'tab': (e, c, v) => { // TODO cuando se añadan los eventos de move
+    if (c.task) {
+      if (c.task.isEditing) return
+      e.preventDefault()
       
-  //     const __prevSibling = c.task.previousTaskSibling;
-  //     if (!__prevSibling) return;
+      const __prevSibling = c.task.previousTaskSibling;
+      if (!__prevSibling) return;
       
-  //     v.state.moveTask(c.task.treeid, __prevSibling.treeid)
-  //   }
-  // },
+      v.state.moveTask(c.task.treeid, __prevSibling.treeid)
+      requestAnimationFrame(() => c.task?.focus())
+    }
+  },
 })
