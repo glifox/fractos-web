@@ -3,12 +3,13 @@ import { LoroDoc } from "loro-crdt";
 import { FractosState, FractosView } from "fractos";
 import { renderer } from "../components/implementations/renderer";
 import { Keymap } from '../keymap/handler'
+import { SideProject } from "../components/web/side-project";
 
 const store = new LocalDatabase();
 
-const doc = new LoroDoc()
+const ldoc = new LoroDoc()
 document.getElementById('save')!.addEventListener('click', _ => {
-  store.set('dev-test', doc.export({ mode: "snapshot" })).then(() => { 
+  store.set('dev-test', ldoc.export({ mode: "snapshot" })).then(() => { 
     const button = document.getElementById('save')! as HTMLButtonElement;
     
     console.info("button:", button);
@@ -40,18 +41,29 @@ document.getElementById('save')!.addEventListener('click', _ => {
 
 
 store.get('dev-test').then(v => {
-  if (v) doc.import(v);
+  if (v) ldoc.import(v);
   
   document.querySelector('.loader')?.remove()
   
-  const state = new FractosState({ doc });
-  const view = new FractosView({
+  const state = new FractosState({ doc: ldoc });
+  const mainView = new FractosView({
     state: state,
     parent: document.getElementById("view")!,
     renderer,
   })
   
-  const keymap = Keymap.subscribe(view);
+  const sideView = new FractosView({
+    state: state,
+    parent: document.getElementById("list")!,
+    renderer: {
+      task: () => { throw new Error("Unreachable state") },
+      project: (v, n) => {
+        return new SideProject(v.state, n);
+      }
+    }
+  })
+  
+  const keymap = Keymap.subscribe(mainView);
 })
 
 // const pr = state.create({
