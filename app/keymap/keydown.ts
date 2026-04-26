@@ -3,6 +3,7 @@ import { createKeybindingsHandler } from "@glifox/desmos"
 import type { FractosView } from "fractos"
 import type { Context } from "./handler"
 import { taskTag, type FractosTaskElement } from "../components/web/task"
+import type { FractosProjectElement } from "../components/web/project"
 
 const keymap = {
   context: '',
@@ -105,6 +106,20 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       if (!__prevSibling) return;
       
       v.state.moveTask(c.task.treeid, __prevSibling.treeid)
+      requestAnimationFrame(() => c.task?.focus())
+    }
+  },
+  'shift-tab': (e, c, v) => { // TODO cuando se añadan los eventos de move
+    if (c.task) {
+      if (c.task.isEditing) return
+      e.preventDefault()
+      
+      let __parent: FractosTaskElement | FractosProjectElement | undefined = c.task.parentTask;
+      if (!__parent) return;
+      
+      __parent = __parent.parentTask ?? c.project!;
+      
+      v.state.moveTask(c.task.treeid, __parent.treeid)
       requestAnimationFrame(() => c.task?.focus())
     }
   },
