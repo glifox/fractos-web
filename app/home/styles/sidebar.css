@@ -1,0 +1,64 @@
+
+.projects {
+    margin: 16px;
+}
+
+#save {
+    width: calc(100% - 48px);
+    margin: 24px;
+    padding: 0.6rem;
+    
+    border: none;
+    border-radius: 8px;
+    color: var(--bg-muted);
+    
+    font-weight: 600;
+    cursor: pointer;
+    
+    transition: background 0.2s;
+    
+    background-color: var(--ctp-blue);
+}
+
+#save:hover {
+    background-color: var(--ctp-red);
+}
+
+.divider {
+    height: 2px;
+    background-color: var(--bg-dark);
+    margin: 1.5rem 16px;
+}
+
+.side-project {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin: 4px 0;
+    border: none;
+    border-radius: 6px;
+    
+    color: inherit;
+    text-align: start;
+    font-size: 0.95rem;
+    background: transparent;
+    
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.side-project:hover {
+    color: var(--primary-color);
+    background-color: var(--bg-light);
+}
+
+.side-project#all {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.side-project.active {
+    background-color: #eff6ff;
+    color: var(--primary-color);
+    font-weight: 600;
+}

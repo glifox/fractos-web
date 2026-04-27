@@ -1,4 +1,4 @@
-import { type Node, type Compositor, type ProjectData, FractosState, type FractosNode } from "fractos";
+import { type Node, type Compositor, type ProjectData, type FractosNode, FractosView } from "fractos";
 import type { TreeID } from "loro-crdt";
 
 class NoneCompositor implements Compositor {
@@ -31,9 +31,12 @@ export class SideProject implements Node<'project'> {
   compositor: Compositor = new NoneCompositor();
   showChildren: boolean = false;
   
-  constructor(private state: FractosState, node: FractosNode) {
+  constructor(private view: FractosView, node: FractosNode) {
     this.treeid = node.treeid;
-    this.element = document.createElement('div');
+    this.element = document.createElement('button');
+    
+    this.element.classList.add('side-project');
+    this.element.dataset.treeid = this.treeid;
     this.element.innerText = node.get('title');
   }
   

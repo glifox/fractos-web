@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>[fractos] Home </title>
     <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
     <link rel="stylesheet" href="styles/tasks.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/dark/mocha.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/light/latte.css">
@@ -16,8 +17,11 @@
         <button id="save">save</button>
         <div class="divider"></div>
         <section class="projects">
-            <section class="all"></section>
-            <section id="list"></section>
+            <section class="all">
+                <button class="side-project" id="all">Display all</button>
+            </section>
+            <section id="list">
+            </section>
         </section>
     </section>
         
