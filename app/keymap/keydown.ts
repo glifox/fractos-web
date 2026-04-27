@@ -22,6 +22,8 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
     
     if (c.project) { // Temporal
       if (!c.task && c.project.previousProjectSibling?._focus.lastTaskChild()) return
+      e.preventDefault()
+      e.stopImmediatePropagation()
       c.project.previousProjectSibling?.focus()
       return
     }
@@ -40,6 +42,8 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
     
     if (c.project) { // Temporal
       if (!c.task && c.project._focus.firstTaskChild()) return
+      e.preventDefault();
+      e.stopImmediatePropagation()
       c.project.nextProjectSibling?.focus()
       return
     }
