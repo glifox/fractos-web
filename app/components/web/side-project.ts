@@ -38,6 +38,14 @@ export class SideProject implements Node<'project'> {
     this.element.classList.add('side-project');
     this.element.dataset.treeid = this.treeid;
     this.element.innerText = node.get('title');
+    
+    this.element.addEventListener('click', () => {
+      console.info("test:");
+      this.view.setMode({
+        type: "selected",
+        project: this.treeid,
+      })
+    })
   }
   
   set<P extends keyof ProjectData>(key: keyof ProjectData, value: ProjectData[P]): void {

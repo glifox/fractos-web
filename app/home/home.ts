@@ -59,7 +59,7 @@ store.get('dev-test').then(v => {
     parent: document.getElementById("list")!,
     renderer: {
       task: () => { throw new Error("Unreachable state") },
-      project: (v, n) => new SideProject(v, n)
+      project: (_, n) => new SideProject(mainView, n)
     }
   })
   
