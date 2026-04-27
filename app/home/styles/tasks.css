@@ -3,7 +3,24 @@
     background-color: var(--bg-light);
     border-radius: 8px;
     margin-top: 26px;
+    margin-bottom: 26px;
+    max-height: calc(100dvh - (26px * 3.5));
     padding: 16px;
+    
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+
+.--pr-children {
+    flex: 1; 
+    overflow-y: auto; 
+    min-height: 0; 
+}
+
+.--pr-children > fractos-task > .--ts-root {
+    margin-right: 8px;
 }
 
 .--ts-checkbox {

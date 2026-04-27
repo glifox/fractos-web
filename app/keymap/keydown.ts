@@ -26,7 +26,10 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       return
     }
     
-    (Array.from(document.getElementsByTagName(taskTag)).pop() as FractosTaskElement).focus()
+    if (c.panel?.classList.contains('main')) {
+      e.preventDefault();
+      (Array.from(document.getElementsByTagName(taskTag)).pop() as FractosTaskElement).focus()
+    }
   },
   'ArrowDown': (e, c) => {
     if (c.task) {
@@ -41,7 +44,10 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       return
     }
     
-    (document.getElementsByTagName(taskTag)[0] as FractosTaskElement).focus()
+    if (true) {
+      e.preventDefault();
+      (document.getElementsByTagName(taskTag)[0] as FractosTaskElement).focus()
+    }
   },
   'Space': (e, c) => {
     if (c.task) {
