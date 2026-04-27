@@ -4,7 +4,8 @@ import { FractosState, FractosView } from "fractos";
 import { renderer } from "../components/implementations/renderer";
 import { Keymap } from '../keymap/handler'
 import { SideProject } from "../components/web/side-project";
-import { TitleEditor } from "../components/class/title";
+import { BaseEditor } from "../components/class/base";
+import type { NewProjectDialog } from "../components/web/new-project.dialog";
 
 const store = new LocalDatabase();
 
@@ -63,18 +64,10 @@ store.get('dev-test').then(v => {
   })
   
   const keymap = Keymap.subscribe(mainView);
+  
+  const dialog = document.getElementById('new-project--dialog') as NewProjectDialog;
+  dialog.init(state);
 })
-
-TitleEditor(
-  document.getElementById('np-title')!,
-  {
-    onConfirm: (v) => { v.contentDOM.blur() },
-    onCancel: () => { },
-  },
-  {
-    comfirmOnFocusout: true,
-  },
-)
 
 // const pr = state.create({
 //   type: 'project',

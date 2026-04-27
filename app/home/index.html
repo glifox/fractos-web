@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="styles/tasks.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/dark/mocha.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/light/latte.css">
+    <script src="../components/web/new-project.dialog.ts" type="module"></script>
     <script src="home.ts" type="module"></script>
     <script src="https://cdn.jsdelivr.net/gh/feraxjs/thselector@v0.1.0/src/core.js"></script>
 </head>
@@ -32,19 +33,6 @@
         <div id="view"></div>
     </section>
     
-    <dialog id="new-project--dialog" popover>
-      <div>
-        <span>Title:</span>
-        <h3 id="np-title" class="editor"></h3>
-      </div>
-      <div>
-        <span>Description:</span>
-        <div id="np-description" class="editor"></div>
-      </div>
-      <footer>
-        <button class="cancel" popovertarget="new-project--dialog" popovertargetaction="hide">Close</button>
-        <button class="confirm">Create</button>
-      </footer>
-    </dialog>
+    <new-project id="new-project--dialog" popover></new-project>
 </body>
 </html>

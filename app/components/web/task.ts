@@ -1,10 +1,10 @@
 import "../web/linear-progress";
-import { TitleEditor, type Callbacks } from "../class/title";
 
 import type { EditorView } from "codemirror";
 import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type TaskData } from "fractos";
 import type { TreeID } from "loro-crdt";
 import { EditorSelection, Transaction } from "@codemirror/state";
+import { BaseEditor, type Callbacks } from "../class/base";
 
 declare global { interface String { readonly dot: string; } }
 Object.defineProperty(String.prototype, 'dot', {
@@ -73,7 +73,7 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
     this.__percentage = this.__root.querySelector(taskElements.percentage.class.dot) as HTMLElement;
     this.__children = this.__root.querySelector(taskElements.children.class.dot) as HTMLElement;
     
-    this.cmTitle = TitleEditor(this.__title, {
+    this.cmTitle = BaseEditor(this.__title, {
       onConfirm: (view, inital) => { 
         if (this.treeid) {
           this.updateTitle()
@@ -98,6 +98,12 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
           this.callbacks = undefined;
         }
       },
+    },
+    {
+        comfirmOnFocusout: false,
+        onlineEditor: true,
+        placeholder: 'Task title...',
+        focusOnDblClick: true,
     });
     
     this.compositor = new FractosCompositor(this.__children);
