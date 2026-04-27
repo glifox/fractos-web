@@ -3,7 +3,7 @@
     margin: 16px;
 }
 
-#save {
+#save, #new {
     width: calc(100% - 48px);
     margin: 24px;
     padding: 0.6rem;
@@ -20,8 +20,19 @@
     background-color: var(--ctp-blue);
 }
 
-#save:hover {
+#new {
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: var(--ctp-green);
+}
+
+#save:hover, #new:hover {
     background-color: var(--ctp-red);
+}
+
+#save:disabled {
+    color: var(--fg-muted);
+    background-color: var(--bg-muted);
 }
 
 .divider {
