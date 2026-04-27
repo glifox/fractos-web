@@ -4,8 +4,8 @@
 }
 
 #save, #new {
-    width: calc(100% - 48px);
-    margin: 24px;
+    width: calc(100% - 16px * 2);
+    margin: 16px;
     padding: 0.6rem;
     
     border: none;
@@ -69,7 +69,6 @@
 }
 
 .side-project.active {
-    background-color: #eff6ff;
-    color: var(--primary-color);
+    background-color: var(--bg-light);
     font-weight: 600;
 }
