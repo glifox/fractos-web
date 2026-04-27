@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>[fractos] Home </title>
     <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/dialogs.css">
     <link rel="stylesheet" href="styles/sidebar.css">
     <link rel="stylesheet" href="styles/tasks.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/dark/mocha.css">
@@ -15,7 +16,7 @@
 <body>
     <section class="side panel">
         <button id="save">save</button>
-        <button id="new">New Project</button>
+        <button id="new" popovertarget="new-project--dialog">New Project</button>
         <div class="divider"></div>
         <section class="projects">
             <section class="all">
@@ -30,5 +31,20 @@
         <div class="loader"></div>
         <div id="view"></div>
     </section>
+    
+    <dialog id="new-project--dialog" popover>
+      <div>
+        <span>Title:</span>
+        <h3 id="np-title" class="editor"></h3>
+      </div>
+      <div>
+        <span>Description:</span>
+        <div id="np-description" class="editor"></div>
+      </div>
+      <footer>
+        <button class="cancel" popovertarget="new-project--dialog" popovertargetaction="hide">Close</button>
+        <button class="confirm">Create</button>
+      </footer>
+    </dialog>
 </body>
 </html>

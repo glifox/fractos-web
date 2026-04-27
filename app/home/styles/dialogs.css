@@ -1,0 +1,95 @@
+/* Estilos base del Dialog / Popover */
+#new-project--dialog  h3 {
+    margin: 0;
+}
+#new-project--dialog {
+  border: none;
+  border-radius: 12px;
+  padding: 24px;
+  background-color: var(--bg-light);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 90%;
+  
+  /* Animación suave de entrada (opcional) */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* El fondo oscuro cuando el popover está abierto */
+#new-project--dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* Contenedores de secciones */
+#new-project--dialog > div {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#new-project--dialog > div > span {
+  font-family: sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  
+}
+
+/* El contenedor que rodea a CodeMirror */
+#np-title, 
+#np-description {
+  border: 1.5px solid var(--bd-dark);
+  border-radius: 6px;
+  overflow: hidden; /* Para que el editor no se salga de los bordes redondeados */
+  transition: border-color 0.2s ease;
+}
+
+#np-description {
+    min-height: 3lh;
+}
+
+/* Feedback visual cuando el editor está activo (focus) */
+#np-title:focus-within, 
+#np-description:focus-within {
+  border-color: var(--ctp-blue);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(from var(--ctp-blue) r g b / .8);
+}
+
+/* Footer y Botones */
+footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+button {
+  border: unset;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel {
+  background: transparent;
+  color: var(--ctp-red);
+}
+
+.cancel:hover {
+  background: var(--ctp-red);
+  color: var(--bg-dark);
+}
+
+.confirm {
+  background: var(--ctp-green);
+  color: var(--bg-dark);
+}
+
+.confirm:hover {
+  background: var(--ctp-red);
+}
