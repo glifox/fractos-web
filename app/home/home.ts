@@ -67,6 +67,18 @@ store.get('dev-test').then(v => {
   
   const dialog = document.getElementById('new-project--dialog') as NewProjectDialog;
   dialog.init(state);
+
+  const showAll = document.getElementById("all")! as HTMLButtonElement;
+
+  showAll.addEventListener('click', () => {
+    requestAnimationFrame(() => {
+      mainView.setMode({ type: 'all' });
+      
+      const prs = document.querySelectorAll('.side-project.active')
+      prs.forEach((__element) => __element.classList.remove('active'))
+      showAll.classList.add('active')
+    })
+  })
 })
 
 // const pr = state.create({

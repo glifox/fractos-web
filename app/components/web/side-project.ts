@@ -40,11 +40,15 @@ export class SideProject implements Node<'project'> {
     this.element.innerText = node.get('title');
     
     this.element.addEventListener('click', () => {
-      console.info("test:");
       this.view.setMode({
         type: "selected",
         project: this.treeid,
       })
+
+      
+      const prs = document.querySelectorAll('.side-project.active')
+      prs.forEach((__element) => __element.classList.remove('active'))
+      this.element.classList.add('active')
     })
   }
   
