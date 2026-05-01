@@ -1,11 +1,25 @@
 
-.--pr-root {
+.--pr-title {
+    display: inline-block;
+}
+
+.--pr-metadata { 
     background-color: var(--bg-light);
+    padding: 16px;
     border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.--pr-metadata:focus-visible {
+    outline: unset;
+    background-color: red;
+    
+}
+
+.--pr-root {
     margin-top: 26px;
     margin-bottom: 26px;
     max-height: calc(100dvh - (26px * 3.5));
-    padding: 16px;
     
     display: flex;
     flex-direction: column;
@@ -44,13 +58,15 @@
 
 .--ts-title {
     flex-grow: 1;
+    flex-basis: 0;
     display: inline-block;
     margin: 0;
+    margin-right: 2px;
 }
 
 
 .--ts-percentage {
-    --lp-bg: var(--bg-dark);
+    --lp-bg: var(--bd-dark);
     --lp-fill: var(--sm-fg-info);
 
     --lp-text: transparent;
@@ -64,6 +80,67 @@
     --lp-duration: 0.4s;
 }
 
+progress-bar {
+    display: flex;
+    width: 20px;
+    
+    justify-content: center;
+    padding-inline: 2px;
+}
+
+.number {
+    display: inline-block;
+    width: 6ch;
+    text-align: end;
+
+    font-size: .7rem;
+
+    border-radius: 9px;
+    background-color: var(--bg-light);
+    /*color: var(--bg-dark);*/
+
+    padding: 2px 4px;
+    margin-inline: 4px;
+}
+
+.progress {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  
+  background-color: var(--lp-bg);
+  color: var(--lp-text);
+  border-radius: 999px;
+  border: var(--lp-border-width) solid var(--lp-border-color);
+  
+  width: var(--lp-width);
+  height: var(--lp-height);
+  
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.progress::before {
+  display: inline-flex;
+  
+  color: var(--lp-text-fill);
+  overflow: hidden;
+  content: '';
+  position: absolute;
+  background-color: var(--lp-fill);
+  pointer-events: none;
+  
+  top: 0;
+  left: 0;
+  
+  width: var(--percentage-width, 0%);
+  height: 100%;
+  transition: width var(--lp-duration) cubic-bezier(0.4, 0, 0.2, 1);
+  
+  box-sizing: border-box;
+  z-index: 0;
+}
 
 /* HTML: <div class="loader"></div> */
 .loader {

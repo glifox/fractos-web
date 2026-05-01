@@ -70,7 +70,7 @@ store.get('dev-test').then(v => {
 
   const showAll = document.getElementById("all")! as HTMLButtonElement;
 
-  showAll.addEventListener('click', () => {
+  showAll?.addEventListener('click', () => {
     requestAnimationFrame(() => {
       mainView.setMode({ type: 'all' });
       

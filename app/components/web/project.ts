@@ -15,10 +15,11 @@ export const projectElements = {
 type ProjectElement = keyof typeof projectElements;
 
 const innerHTML = /* html */`
-  <h2 class="${projectElements.title.class}"></h2>
-  <div class="${projectElements.focus.class}" tabindex="0">focus</div>
-  <span class="${projectElements.percentage.class}"></span>
-  <p class="${projectElements.description.class}"></p>
+  <div class="--pr-metadata ${projectElements.focus.class}" tabindex="0">
+    <h2 class="${projectElements.title.class}"></h2>
+    <span class="${projectElements.percentage.class}"></span>
+    <p class="${projectElements.description.class}"></p>
+  </div>
   <div class="${projectElements.children.class}"></div>
 `;
 
