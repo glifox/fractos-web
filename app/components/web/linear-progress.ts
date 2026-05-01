@@ -28,10 +28,14 @@ class LinearProgress extends HTMLElement {
   }
 
   updateProgress() {
-    const percentage = parseFloat(this.getAttribute('data-percentage') || '0');
-    const textValue = `${percentage.toFixed(1)}%`;
+    const percentage = parseInt(this.getAttribute('data-percentage') || '0');
+    const textValue = `${percentage} %`;
 
     this.__number.textContent = textValue;
+
+    if (percentage == 100) this.__number.classList.add('done')
+    else this.__number.classList.remove('done')
+    
     this.__progress.setAttribute('data-text', textValue);
     this.__progress.style.setProperty('--percentage-width', `${percentage}%`);
   }

@@ -87,11 +87,15 @@ progress-bar {
     justify-content: center;
     padding-inline: 2px;
 }
+.number.done {
+    background-color: var(--ctp-green);
+    color: var(--bg-dark)
+}
 
 .number {
     display: inline-block;
     width: 6ch;
-    text-align: end;
+    text-align: center;
 
     font-size: .7rem;
 
