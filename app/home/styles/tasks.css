@@ -64,6 +64,21 @@
     margin-right: 2px;
 }
 
+.--ts-children {
+    position: relative;
+}
+
+.--ts-children::before {
+    content: '';
+    position: absolute;
+
+    left: 12px;
+    
+    height: 100%;
+    width: 2px;
+
+    background-color: var(--bg-light);
+}
 
 .--ts-percentage {
     --lp-bg: var(--bd-dark);
