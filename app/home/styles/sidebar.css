@@ -6,7 +6,7 @@
 
 .fractos-card {
     display: flex;
-    margin: 16px;
+    margin: 32px 16px;
     padding: 8px;
 
     justify-content: start;
@@ -39,12 +39,6 @@
     margin: 0;
 
     color: var(--fg-dimmer);
-}
-
-
-.projects {
-    flex-grow: 1;
-    margin: 16px;
 }
 
 #save, #new {
@@ -80,13 +74,34 @@
 }
 
 .divider {
-    height: 2px;
-    background-color: var(--bg-dark);
-    margin: 1.5rem 16px;
+    position: relative;
+    margin: 1.5rem 16px 0 18px;
+    font-size: .8rem;
+}
+
+.divider::after {
+    position: absolute;
+    content: '';
+
+    top: 50%;
+
+    height: 1px;
+    width: calc(100% - 16px - 10ch);
+
+    background-color: var(--bd-dark);
+    margin-left: 8px;
+}
+
+
+.projects {
+    flex-grow: 1;
+    margin: 16px;
 }
 
 .side-project {
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    
     width: 100%;
     padding: 0.75rem 1rem;
     margin: 4px 0;
@@ -105,11 +120,6 @@
 .side-project:hover {
     color: var(--primary-color);
     background-color: var(--bg-light);
-}
-
-.side-project#all {
-    font-weight: 700;
-    color: var(--text-main);
 }
 
 .side-project.active {
