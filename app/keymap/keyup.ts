@@ -44,6 +44,7 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       return
     }
     if (c.project) {
+      if (c.project.isEditing) return;
       newTask(v.state, c.project, c.project);
       return
     }

@@ -1,6 +1,9 @@
 import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type ProjectData } from "fractos";
 import type { TreeID } from "loro-crdt";
 import { taskTag, type FractosTaskElement } from "./task";
+import { BaseEditor } from "../class/base";
+import { Transaction } from "@codemirror/state";
+import type { EditorView } from "codemirror";
 
 
 export const projectElements = {
@@ -30,6 +33,9 @@ export class FractosProjectElement extends HTMLElement implements Node<'project'
   private __percentage: HTMLElement;
   private __children: HTMLElement;
   private __focus: HTMLElement;
+
+  private cmTitle: EditorView;
+  private cmDescription: EditorView;
   
   private state?: FractosState;
   override tagName: string = projectTag;
@@ -41,6 +47,7 @@ export class FractosProjectElement extends HTMLElement implements Node<'project'
   get treeid() { return this.dataset.treeid as TreeID };
   get element() { return this }
   get tasks() { return this.__children }
+  get isEditing() { return this.cmTitle.hasFocus || this.cmDescription.hasFocus }
   
   constructor() { super()
     
@@ -53,7 +60,10 @@ export class FractosProjectElement extends HTMLElement implements Node<'project'
     this.__description = this.__root.querySelector(projectElements.description.class.dot) as HTMLElement;
     this.__percentage = this.__root.querySelector(projectElements.percentage.class.dot) as HTMLElement;
     this.__children = this.__root.querySelector(projectElements.children.class.dot) as HTMLElement;
-    
+
+    this.cmTitle = this.titleEditor(this.__title);
+    this.cmDescription = this.descriptionEditor(this.__description);
+
     this.compositor = new FractosCompositor(this.__children);
     
     this.setEvents();
@@ -80,13 +90,75 @@ export class FractosProjectElement extends HTMLElement implements Node<'project'
   }
   
   setTitle = (title: string) => {
-    this.__title.innerText = title;
+    this.cmTitle.dispatch({
+      changes: { from: 0, insert: title, to: this.cmTitle.state.doc.length },
+      annotations: [ Transaction.addToHistory.of(false) ]
+    })
   }
+  
   setPercetage = (percentage: number) => {
     this.__percentage.innerText = `${percentage}%`;
   }
+  
   setDescription = (description: string) => {
-    this.__description.innerText = description;
+    this.cmDescription.dispatch({
+      changes: { from: 0, insert: description, to: this.cmDescription.state.doc.length },
+      annotations: [ Transaction.addToHistory.of(false) ]
+    })
+  }
+
+  private update(data: {
+    title?: string,
+    description?: string,
+  }) {
+    this.state?.update({
+      type: "task",
+      id: this.treeid,
+      ...data,
+    })
+  }
+  
+  titleEditor(element: HTMLElement) {
+      return BaseEditor(element, {
+        onConfirm: (view, inital) => { 
+          const text = view.state.doc.toString();
+          if (text !== '' && text !== inital) this.update({ title: text })
+          this.focus()
+          return;
+        },
+        onCancel: (_, inital) => {
+          this.setTitle(inital)
+          this.focus()
+          return;
+        },
+      },
+      {
+        comfirmOnFocusout: false,
+        onlineEditor: true,
+        placeholder: 'Project title...',
+        focusOnDblClick: true,
+      });
+  }
+
+  descriptionEditor(element: HTMLElement) {
+      return BaseEditor(element, {
+        onConfirm: (view, inital) => { 
+          const text = view.state.doc.toString();
+          if (text !== '' && text !== inital) this.update({ description: text })
+          this.focus()
+          return;
+        },
+        onCancel: (_, inital) => {
+          this.setDescription(inital)
+          this.focus()
+          return;
+        },
+      },
+      {
+        comfirmOnFocusout: false,
+        placeholder: 'Project description...',
+        focusOnDblClick: true,
+      });
   }
   
   // Focus
