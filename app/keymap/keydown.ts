@@ -3,7 +3,7 @@ import { createKeybindingsHandler } from "@glifox/desmos"
 import type { FractosView } from "fractos"
 import type { Context } from "./handler"
 import { taskTag, type FractosTaskElement } from "../components/web/task"
-import type { FractosProjectElement } from "../components/web/project"
+import { projectTag, type FractosProjectElement } from "../components/web/project"
 
 const keymap = {
   context: '',
@@ -18,13 +18,13 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       if (c.task.isEditing) return
       e.preventDefault()
       if (c.task.focusGerarquicalPreviousTask()) return
+      if (c.project?.focus()) return
     }
     
     if (c.project) { // Temporal
       if (c.project.isEditing) return;
-      if (!c.task && c.project.previousProjectSibling?._focus.lastTaskChild()) return
       e.preventDefault()
-      e.stopImmediatePropagation()
+      if (!c.task && c.project.previousProjectSibling?._focus.lastTaskChild()) return
       c.project.previousProjectSibling?.focus()
       return
     }
@@ -43,16 +43,16 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
     
     if (c.project) { // Temporal
       if (c.project.isEditing) return;
+      e.preventDefault()
       if (!c.task && c.project._focus.firstTaskChild()) return
-      e.preventDefault();
-      e.stopImmediatePropagation()
       c.project.nextProjectSibling?.focus()
       return
     }
-    
-    if (true) {
+
+    const project = document.getElementsByTagName(projectTag)[0] as FractosTaskElement;
+    if (project) {
       e.preventDefault();
-      (document.getElementsByTagName(taskTag)[0] as FractosTaskElement).focus()
+      project.focus();
     }
   },
   'Space': (e, c) => {
