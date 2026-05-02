@@ -4,7 +4,6 @@ import { FractosState, FractosView } from "fractos";
 import { renderer } from "../components/implementations/renderer";
 import { Keymap } from '../keymap/handler'
 import { SideProject } from "../components/web/side-project";
-import { BaseEditor } from "../components/class/base";
 import type { NewProjectDialog } from "../components/web/new-project.dialog";
 
 const store = new LocalDatabase();
@@ -80,55 +79,3 @@ store.get('dev-test').then(v => {
     })
   })
 })
-
-// const pr = state.create({
-//   type: 'project',
-//   title: "this is not a project",
-//   description: "Just kidding, it is",
-// })
-
-
-// state.create({
-//   type: 'task',
-//   parent: pr,
-//   title: "llamar a jesus",
-//   description: "Si señor",
-//   percentage: 20,
-// })
-
-
-// const ts = state.createTask({
-//   title: "otra tarea",
-//   description: "Si señor",
-//   percentage: 100,
-// }, pr)
-
-// state.createTask({
-//   title: "subtarea1",
-//   description: "Si señor",
-//   percentage: 10,
-// }, ts)
-
-// state.createTask({
-//   title: "subtarea3",
-//   description: "Si señor",
-//   percentage: 0,
-// }, ts)
-
-// state.createTask({
-//   title: "subtarea2",
-//   description: "Si señor",
-//   percentage: 60,
-// }, ts)
-
-// state.update({
-//   id: ts,
-//   type: "task",
-//   title: "como?",
-// })
-
-// state.createTask({
-//   title: "third task",
-//   description: "Si señor",
-//   percentage: 60,
-// }, pr)
