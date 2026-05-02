@@ -1,3 +1,4 @@
+import { createKeybindingsHandler } from "@glifox/desmos";
 import { EditorView, minimalSetup } from "codemirror";
 import { EditorSelection, EditorState } from "@codemirror/state";
 import { keymap, placeholder } from "@codemirror/view";
@@ -21,13 +22,20 @@ export const BaseEditor = (
   let forced_focus_out = false;
   let initalValue = '';
   
-  const confirm = (v: EditorView) => {
+  const confirm = (e: KeyboardEvent, v: EditorView) => {
     forced_focus_out = true
     v.contentDOM.blur()
     if (v.state.doc.length > 0) callbacks.onConfirm(v, initalValue)
     else if (callbacks.onCancel) callbacks.onCancel(v, initalValue)
+    e.stopImmediatePropagation()
     return true;
   }
+  
+  const confirmKey = (options?.onlineEditor) ? 'enter': 'ctrl-enter';
+  
+  const keyup_ = createKeybindingsHandler<[EditorView]>({
+    [confirmKey]: confirm 
+  })
   
   const oneline = (options?.onlineEditor)
     ? EditorState.transactionFilter
@@ -37,12 +45,7 @@ export const BaseEditor = (
   const view = new EditorView({
     doc: ``,
     extensions: [
-      keymap.of([
-        {
-          key: (options?.onlineEditor) ? 'Enter': 'Ctrl-Enter',
-          run: (v) => confirm(v),
-        },
-      ]),
+      keymap.of([ { key: "Ctrl-Enter", run: () => true, } ]),
       minimalSetup,
       EditorView.lineWrapping,
       oneline,
@@ -71,6 +74,7 @@ export const BaseEditor = (
             return true
           }
         },
+        'keyup': keyup_,
         'focusin': (_, v) => {
           initalValue = v.state.doc.toString();
         },
