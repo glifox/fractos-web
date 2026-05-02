@@ -9,12 +9,13 @@
   "dependencies": {
     "@catppuccin/codemirror": "^1.0.3",
     "@codemirror/state": "^6.6.0",
-    "@codemirror/view": "^6.41.0",
+    "@codemirror/view": "^6.41.1",
     "@glifox/desmos": "^0.1.2",
     "@glifox/gnosis": "^0.0.19",
     "codemirror": "^6.0.2",
     "fractos": "link:../fractos",
-    "loro-crdt": "^1.10.7"
+    "loro-crdt": "^1.12.1",
+    "marked": "^18.0.3"
   },
   "scripts": {
     "prev:home": "bun ./app/home/index.html"

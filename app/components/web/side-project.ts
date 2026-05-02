@@ -1,5 +1,6 @@
 import { type Node, type Compositor, type ProjectData, type FractosNode, FractosView } from "fractos";
 import type { TreeID } from "loro-crdt";
+import { marked } from "marked";
 
 class NoneCompositor implements Compositor {
   push(node: Node<"project" | "task">): void {
@@ -66,7 +67,7 @@ export class SideProject implements Node<'project'> {
   }
 
   setTitle(text: string) {
-    this.title.innerText = text;
+    this.title.innerHTML = marked.parseInline(text, { silent: true }).toString();
   }
 
   setPercentage(percentage: string) {
