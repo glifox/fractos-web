@@ -1,5 +1,49 @@
 
+.side.panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.fractos-card {
+    display: flex;
+    margin: 16px;
+    padding: 8px;
+
+    justify-content: start;
+    align-items: center;
+}
+
+.fractos-card > svg { 
+    height: 48px;
+    width: 48px;
+
+    fill: var(--ctp-peach);
+}
+
+.fractos-card > .title {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+}
+
+.fractos-card h1 {
+    font-size: 1.8rem;
+    line-height: 1lh;
+    
+    margin: 4px 0;
+}
+
+.fractos-card p {
+    font-size: .8rem;
+    line-height: 1lh;
+    margin: 0;
+
+    color: var(--fg-dimmer);
+}
+
+
 .projects {
+    flex-grow: 1;
     margin: 16px;
 }
 
