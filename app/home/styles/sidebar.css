@@ -146,14 +146,39 @@
   color: var(--fg-bright); 
 }
 
-.pop-keys {
+.links > span {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.links  button {
+    padding: 0;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    
+    height: 32px;
+    width: 32px;
+    color: var(--fg-muted);
     background-color: var(--ctp-surface0);
 }
 
-.pop-keys:hover {
+.links  button.error {
+    background-color: var(--ctp-red);
+}
+
+.links  button.success {
+    background-color: var(--ctp-green);
+}
+
+.links  button:hover {
     background-color: var(--ctp-surface1);
 }
 
+[data-lucide] {
+    height: 16px;
+    margin: 0;
+}
 
 #keybinds {
     border: none;

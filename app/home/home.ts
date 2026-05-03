@@ -6,9 +6,91 @@ import { Keymap } from '../keymap/handler'
 import { SideProject } from "../components/web/side-project";
 import type { NewProjectDialog } from "../components/web/new-project.dialog";
 
+const startTimer = (oncomplete: () => void, duration: number) => {
+  let timeoutId: number | null = null;
+  const startTime = Date.now();
+  
+  const timeoutHandler = () => {
+    if (Date.now() - startTime >= duration) {
+      oncomplete();
+      window.cancelAnimationFrame(timeoutId!);
+    } else {
+      timeoutId = requestAnimationFrame(timeoutHandler);
+    }
+  };
+
+  timeoutId = requestAnimationFrame(timeoutHandler);
+}
+
 const store = new LocalDatabase();
 
-const ldoc = new LoroDoc()
+const ldoc = new LoroDoc();
+
+const __btImport = document.getElementById('import')! as HTMLButtonElement;
+const __btExport = document.getElementById('export')! as HTMLButtonElement;
+const __import = document.getElementById('input-archivo')! as HTMLInputElement;
+
+
+__import.addEventListener('change', (evento: Event) => {
+  const input = evento.target as HTMLInputElement;
+  if (!input.files || input.files.length === 0) return;
+
+  const archivo = input.files[0];
+  const lector = new FileReader();
+
+  lector.onload = () => {
+    const buffer = lector.result as ArrayBuffer;
+    const contenido = new Uint8Array(buffer);
+    
+    ldoc.import(contenido);
+    __btImport.classList.add('success')
+    
+    startTimer(() => {
+      __btImport.classList.remove('success')
+      __btImport.disabled = false;
+    }, 2000)
+  };
+
+  lector.onerror = (error) => {
+    console.error("Error al leer el archivo:", error);
+    __btImport.classList.add('error')
+    
+    startTimer(() => {
+      __btImport.classList.remove('error')
+      __btImport.disabled = false;
+    }, 2000)
+  };
+
+  lector.readAsArrayBuffer(archivo!);
+});
+
+__btImport.addEventListener('click', () => {
+  __btImport.disabled = true;
+  __import.click()
+})
+
+__btExport.addEventListener('click', () => {
+  __btExport.disabled = true;
+  let content = ldoc.export({ mode: "snapshot" })
+  
+  const cleanUint8Array = new Uint8Array(content); 
+  const blob = new Blob([cleanUint8Array], { type: 'application/octet-stream' });
+
+  const url = window.URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+
+  anchor.href = url;
+  anchor.download = 'fractos.loro';
+
+  anchor.style.display = 'none';
+  document.body.appendChild(anchor);
+  anchor.click();
+
+  document.body.removeChild(anchor);
+  window.URL.revokeObjectURL(url);
+  __btExport.disabled = false;
+})
+
 document.getElementById('save')!.addEventListener('click', _ => {
   store.set('dev-test', ldoc.export({ mode: "snapshot" })).then(() => { 
     const button = document.getElementById('save')! as HTMLButtonElement;
@@ -17,27 +99,11 @@ document.getElementById('save')!.addEventListener('click', _ => {
     button.innerText = '🚀 Saved!!!!'
     button.disabled = true;
     
-    let timeoutId: number | null = null;
-    
-    function startTimer() {
-      const startTime = Date.now();
-      
-      const timeoutHandler = () => {
-        if (Date.now() - startTime >= 600) {
-          button.innerText = 'save'
-          button.disabled = false;
-          window.cancelAnimationFrame(timeoutId!);
-        } else {
-          timeoutId = requestAnimationFrame(timeoutHandler);
-        }
-      };
-    
-      timeoutId = requestAnimationFrame(timeoutHandler);
-    }
-    
-    startTimer();
-    
-  } )
+    startTimer(() => { 
+      button.innerText = 'save'
+      button.disabled = false;
+    }, 600);
+  })
 })
 
 

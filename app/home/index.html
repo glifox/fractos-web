@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/dark/mocha.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/light/latte.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://unpkg.com/lucide@v1.14.0"></script>
     <script src="../components/web/new-project.dialog.ts" type="module"></script>
     <script src="home.ts" type="module"></script>
     <script src="https://cdn.jsdelivr.net/gh/feraxjs/thselector@v0.1.0/src/core.js"></script>
@@ -36,7 +37,11 @@
             <a href="https://github.com/glifox/fractos" target="_blank" class="github-icon">
               <i class="fab fa-github"></i>
             </a>
-            <button popovertarget="keybinds" class="pop-keys">?</button>
+            <span>
+                <button id="import"><i data-lucide="file-up"></i></button>
+                <button id="export"><i data-lucide="file-down"></i></button>
+                <button popovertarget="keybinds" class="pop-keys">?</button>
+            </span>
         </section>
     </section>
         
@@ -60,5 +65,10 @@
         <div><code>d</code><span>delete task</span></div>
         <div><code>Ctrl-S</code><span>Save document</span></div>
     </dialog>
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <input type="file" id="input-archivo" style="display: none" accept=".loro"/>
 </body>
 </html>
