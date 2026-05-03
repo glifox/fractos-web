@@ -26,6 +26,22 @@ const store = new LocalDatabase();
 
 const ldoc = new LoroDoc();
 
+const state = new FractosState({ doc: ldoc });
+const mainView = new FractosView({
+  state: state,
+  parent: document.getElementById("view")!,
+  renderer,
+})
+
+const sideView = new FractosView({
+  state: state,
+  parent: document.getElementById("list")!,
+  renderer: {
+    task: () => { throw new Error("Unreachable state") },
+    project: (_, n) => new SideProject(mainView, n)
+  }
+})
+
 const __btImport = document.getElementById('import')! as HTMLButtonElement;
 const __btExport = document.getElementById('export')! as HTMLButtonElement;
 const __import = document.getElementById('input-archivo')! as HTMLInputElement;
@@ -43,6 +59,9 @@ __import.addEventListener('change', (evento: Event) => {
     const contenido = new Uint8Array(buffer);
     
     ldoc.import(contenido);
+    mainView.setMode({ type: "all" });
+    sideView.setMode({ type: "all" });
+    
     __btImport.classList.add('success')
     
     startTimer(() => {
@@ -109,24 +128,10 @@ document.getElementById('save')!.addEventListener('click', _ => {
 
 store.get('dev-test').then(v => {
   if (v) ldoc.import(v);
+  mainView.setMode({ type: "all" });
+  sideView.setMode({ type: "all" });
   
   document.querySelector('.loader')?.remove()
-  
-  const state = new FractosState({ doc: ldoc });
-  const mainView = new FractosView({
-    state: state,
-    parent: document.getElementById("view")!,
-    renderer,
-  })
-  
-  const sideView = new FractosView({
-    state: state,
-    parent: document.getElementById("list")!,
-    renderer: {
-      task: () => { throw new Error("Unreachable state") },
-      project: (_, n) => new SideProject(mainView, n)
-    }
-  })
   
   const keymap = Keymap.subscribe(mainView);
   
