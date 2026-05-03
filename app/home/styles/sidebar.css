@@ -126,3 +126,83 @@
     background-color: var(--bg-light);
     font-weight: 600;
 }
+
+.links {
+    padding: 16px;
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+}
+.github-icon {
+  font-size: 32px; 
+  text-decoration: none;
+  transition: color 0.3s ease;
+
+  color: var(--fg-muted);
+}
+
+.github-icon:hover {
+  color: var(--fg-bright); 
+}
+
+.pop-keys {
+    background-color: var(--ctp-surface0);
+}
+
+.pop-keys:hover {
+    background-color: var(--ctp-surface1);
+}
+
+
+#keybinds {
+    border: none;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background-color: var(--bg-muted);
+    color: var(--fg-muted);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    max-width: 400px;
+}
+
+#keybinds::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+#keybinds div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 4px;
+    border-bottom: 1px solid #333;
+    gap: 2rem;
+}
+
+#keybinds div:last-child {
+    border-bottom: none;
+}
+
+#keybinds code {
+    background: var(--bg-light);
+    color: var(--ctp-green);
+    
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.85rem;
+
+    border: 1px solid #444;
+    box-shadow: 0 2px 0 #000;
+}
+
+#keybinds span {
+    font-size: 0.9rem;
+    color: var(--fg-muted);
+    text-align: right;
+}
+
+#keybinds div:hover {
+    background-color: var(--bg-dark);
+}

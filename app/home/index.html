@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles/tasks.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/dark/mocha.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/light/latte.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="../components/web/new-project.dialog.ts" type="module"></script>
     <script src="home.ts" type="module"></script>
     <script src="https://cdn.jsdelivr.net/gh/feraxjs/thselector@v0.1.0/src/core.js"></script>
@@ -31,6 +32,12 @@
             </section>
         </section>
         <button id="save">save</button>
+        <section class="links">
+            <a href="https://github.com/glifox/fractos" target="_blank" class="github-icon">
+              <i class="fab fa-github"></i>
+            </a>
+            <button popovertarget="keybinds" class="pop-keys">?</button>
+        </section>
     </section>
         
     <section class="main panel">
@@ -39,5 +46,19 @@
     </section>
     
     <new-project id="new-project--dialog" popover></new-project>
+    <dialog id="keybinds" popover>
+        <div><code>ArrowUp</code><span>Navigate Up</span></div>
+        <div><code>ArrowDown</code><span>Navigate Down</span></div>
+        <div><code>Enter</code><span>New sibling task</span></div>
+        <div><code>Shift-Enter</code><span>New child task</span></div>
+        <div><code>Tab</code><span>Convert task as child of previous sibling</span></div>
+        <div><code>Shift-Tab</code><span>Convert task as parent sibling</span></div>
+        <div><code>Space</code><span>Mark as compleate</span></div>
+        <div><code>Shift-ArrowUp</code><span>Set percentage +10%</span></div>
+        <div><code>Shift-ArrowDown</code><span>Set percentage -10%</span></div>
+        <div><code>e</code><span>Edit title task</span></div>
+        <div><code>d</code><span>delete task</span></div>
+        <div><code>Ctrl-S</code><span>Save document</span></div>
+    </dialog>
 </body>
 </html>
