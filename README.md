@@ -1,15 +1,9 @@
 # fractos-web
 
-To install dependencies:
+![fractos-screenshot](./assets/screenshot.png)
 
-```bash
-bun install
-```
+Fractos is a project and task mannager like any other, 
+it allows an infinite nesting of tasks, supports **WYSIWYG markdown** edition 
+in titles and descriptions.
 
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.3.6. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+More features will come i the furute. for now it's on beta.
