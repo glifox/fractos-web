@@ -11,13 +11,21 @@
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.41.1",
     "@glifox/desmos": "^0.1.2",
-    "@glifox/gnosis": "^0.0.19",
     "@glifox/fractos": "^0.1.0",
+    "@glifox/gnosis": "^0.0.19",
     "codemirror": "^6.0.2",
     "loro-crdt": "^1.12.1",
     "marked": "^18.0.3"
   },
   "scripts": {
-    "prev:home": "bun ./app/home/index.html"
+    "prev:home": "bun ./app/home/index.html",
+    "build": "vite build ./app/home --config vite.config.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "rollup": "^4.60.2",
+    "vite": "^8.0.10",
+    "vite-plugin-top-level-await": "^1.6.0",
+    "vite-plugin-wasm": "^3.6.0"
   }
 }
