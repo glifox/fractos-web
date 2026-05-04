@@ -22,6 +22,8 @@ const startTimer = (oncomplete: () => void, duration: number) => {
   timeoutId = requestAnimationFrame(timeoutHandler);
 }
 
+const __view = document.getElementById("view")!;
+
 const store = new LocalDatabase();
 
 const ldoc = new LoroDoc();
@@ -29,7 +31,7 @@ const ldoc = new LoroDoc();
 const state = new FractosState({ doc: ldoc });
 const mainView = new FractosView({
   state: state,
-  parent: document.getElementById("view")!,
+  parent: __view,
   renderer,
 })
 
@@ -55,19 +57,20 @@ __import.addEventListener('change', (evento: Event) => {
   const lector = new FileReader();
 
   lector.onload = () => {
+    __view.querySelector('.loader')?.remove()
     const buffer = lector.result as ArrayBuffer;
     const contenido = new Uint8Array(buffer);
+    __btImport.classList.add('success')
     
     ldoc.import(contenido);
     mainView.setMode({ type: "all" });
     sideView.setMode({ type: "all" });
     
-    __btImport.classList.add('success')
     
     startTimer(() => {
       __btImport.classList.remove('success')
       __btImport.disabled = false;
-    }, 2000)
+    }, 200)
   };
 
   lector.onerror = (error) => {
@@ -76,8 +79,9 @@ __import.addEventListener('change', (evento: Event) => {
     
     startTimer(() => {
       __btImport.classList.remove('error')
+      __view.querySelector('.loader')?.remove()
       __btImport.disabled = false;
-    }, 2000)
+    }, 200)
   };
 
   lector.readAsArrayBuffer(archivo!);
@@ -85,6 +89,7 @@ __import.addEventListener('change', (evento: Event) => {
 
 __btImport.addEventListener('click', () => {
   __btImport.disabled = true;
+  __view.innerHTML = "<div class=\"loader\"></div>";
   __import.click()
 })
 
