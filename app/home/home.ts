@@ -48,6 +48,9 @@ const __btImport = document.getElementById('import')! as HTMLButtonElement;
 const __btExport = document.getElementById('export')! as HTMLButtonElement;
 const __import = document.getElementById('input-archivo')! as HTMLInputElement;
 
+__import.addEventListener('cancel', () => {
+  __view.querySelector('.loader')?.remove()
+})
 
 __import.addEventListener('change', (evento: Event) => {
   const input = evento.target as HTMLInputElement;
