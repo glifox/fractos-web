@@ -5,9 +5,9 @@ name: Publish Web App
 run-name: 🚀 Publish Web App 🚀
 on:
     workflow_dispatch:
-    release:
-      types:
-        - created
+    push:
+      branches:
+        - main
 
 permissions:
     contents: read
