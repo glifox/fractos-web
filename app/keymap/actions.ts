@@ -1,4 +1,4 @@
-import type { FractosView } from "fractos";
+import type { FractosView } from "@glifox/fractos";
 import type { Context } from "./handler";
 
 export type Actions = keyof typeof actions;

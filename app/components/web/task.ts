@@ -1,7 +1,7 @@
 import "../web/linear-progress";
 
 import type { EditorView } from "codemirror";
-import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type TaskData } from "fractos";
+import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type TaskData } from "@glifox/fractos";
 import type { TreeID } from "loro-crdt";
 import { EditorSelection, Transaction } from "@codemirror/state";
 import { BaseEditor, type Callbacks } from "../class/base";

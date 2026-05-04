@@ -1,7 +1,7 @@
 import '../web/task'
 
 import type { TreeID } from 'loro-crdt';
-import type { FractosState, Renderer as FractosRenderer } from "fractos";
+import type { FractosState, Renderer as FractosRenderer } from "@glifox/fractos";
 import { taskTag, type FractosTaskElement } from '../web/task';
 import { FractosProjectElement, projectTag } from '../web/project';
 

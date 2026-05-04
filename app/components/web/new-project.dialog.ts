@@ -1,6 +1,6 @@
 import type { EditorView } from "codemirror";
 import { BaseEditor } from "../class/base";
-import type { FractosState } from "fractos";
+import type { FractosState } from "@glifox/fractos";
 
 
 const elementTag = 'new-project' as const;

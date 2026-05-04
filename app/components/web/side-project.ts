@@ -1,4 +1,4 @@
-import { type Node, type Compositor, type ProjectData, type FractosNode, FractosView } from "fractos";
+import { type Node, type Compositor, type ProjectData, type FractosNode, FractosView } from "@glifox/fractos";
 import type { TreeID } from "loro-crdt";
 import { marked } from "marked";
 

@@ -1,6 +1,6 @@
 import { LocalDatabase } from "../storage/indexed";
 import { LoroDoc } from "loro-crdt";
-import { FractosState, FractosView } from "fractos";
+import { FractosState, FractosView } from "@glifox/fractos";
 import { renderer } from "../components/implementations/renderer";
 import { Keymap } from '../keymap/handler'
 import { SideProject } from "../components/web/side-project";

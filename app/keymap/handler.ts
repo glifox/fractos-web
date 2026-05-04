@@ -3,7 +3,7 @@ import { keyboardHandler as keyboardHandlerUp } from "./keyup";
 import { taskTag, type FractosTaskElement } from "../components/web/task";
 
 
-import type { FractosView } from "fractos";
+import type { FractosView } from "@glifox/fractos";
 import { projectTag, type FractosProjectElement } from "../components/web/project";
 
 type PressType = "up" | "down";

@@ -1,6 +1,6 @@
 import { createKeybindingsHandler } from "@glifox/desmos"
 
-import type { FractosState, FractosView } from "fractos"
+import type { FractosState, FractosView } from "@glifox/fractos"
 import type { Context } from "./handler"
 import { FractosTaskElement, taskTag } from "../components/web/task"
 import type { FractosProjectElement } from "../components/web/project"

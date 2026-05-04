@@ -1,4 +1,4 @@
-import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type ProjectData } from "fractos";
+import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type ProjectData } from "@glifox/fractos";
 import type { TreeID } from "loro-crdt";
 import { taskTag, type FractosTaskElement } from "./task";
 import { BaseEditor } from "../class/base";
