@@ -174,22 +174,27 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
   }
 
   private updateChildrenExpantion() {
+    let length = this.compositor?.length ?? 0;
+    
     if (this.__showchildren) {
       this.__indicator.innerText = '▼'
       this.__indicator.classList.remove('closed')
       this.view?._renderChildren(this)
-      
-      if (!(this.compositor) || this.compositor.length == 0) {
-        this.__indicator.innerText = '●'
-        this.__indicator.classList.add('empty')
-      }
-      else this.__indicator.classList.remove('empty')
+      length = this.compositor?.length ?? 0;
     }
     else {
       this.__indicator.innerText = '▶'
       this.__indicator.classList.add('closed')
       this.compositor.parent.innerHTML = '';
       this.compositor = new FractosCompositor(this.compositor.parent);
+    }
+    
+    if (length == 0) {
+      this.__indicator.innerText = '●'
+      this.__indicator.classList.add('empty')
+    }
+    else {
+      this.__indicator.classList.remove('empty')
     }
   }
   
