@@ -57,7 +57,6 @@
   box-shadow: 0 0 0 2px rgba(from var(--ctp-blue) r g b / .8);
 }
 
-/* Footer y Botones */
 footer {
   display: flex;
   justify-content: flex-end;
@@ -92,4 +91,35 @@ button {
 
 .confirm:hover {
   background: var(--ctp-red);
+}
+
+#loader[popover] {
+    border: none;
+    background: transparent;
+    padding: 0;
+    overflow: visible;
+    
+    margin: auto;
+    
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+#loader:popover-open {
+    opacity: 1;
+    transform: scale(1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#loader::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px); /* Difumina el contenido de atrás */
+}
+
+#loader .loader {
+    margin: 0;
 }

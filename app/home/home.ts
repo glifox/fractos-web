@@ -10,7 +10,7 @@ import { FractosState, FractosView, type ViewMode } from "@glifox/fractos";
 import { renderer } from "../components/implementations/renderer";
 import { Keymap } from '../keymap/handler'
 import { SideProject } from "../components/web/side-project";
-import { domReady, startTimer } from "../utils";
+import { domReady, downloadContent, startTimer } from "../utils";
 import type { NewProjectDialog } from "../components/web/new-project.dialog";
 
 class App {
@@ -19,6 +19,8 @@ class App {
   mainView: FractosView | null = null;
   sideView: FractosView | null = null;
 
+  __view: HTMLElement | null = null;
+  
   async init() {
     await Promise.all([
       lorocontent.then((c) => { if (c) this.ldoc.import(c) }),
@@ -35,6 +37,7 @@ class App {
   
   async main() {
     const __view = document.getElementById("view")!;
+    this.__view = __view;
     
     const dialog = document.getElementById('new-project--dialog') as NewProjectDialog;
     dialog.init(this.state);
@@ -77,6 +80,7 @@ class App {
     const __btImport = document.getElementById('import')! as HTMLButtonElement;
     const __btExport = document.getElementById('export')! as HTMLButtonElement;
     const __import = document.getElementById('input-archivo')! as HTMLInputElement;
+    const __loader = document.getElementById('loader')! as HTMLElement;
   
     const __btSave = document.getElementById('save')! as HTMLButtonElement;
     __btSave.addEventListener('click', _ => {
@@ -90,9 +94,59 @@ class App {
         }, 300);
       })
     })
+
+    __btExport.addEventListener('click', e => {
+      __btExport.disabled = true;
+        let content = this.ldoc.export({ mode: "snapshot" })
+        downloadContent(content);
+        __btExport.disabled = false;
+    })
+
+    __btImport.addEventListener('click', _ => {
+      __import.click()
+      __btImport.disabled = true;
+      __loader.showPopover();
+    })
+    __import.addEventListener('change', e => {
+      const input = e.target as HTMLInputElement;
+        if (!input.files || input.files.length === 0) return;
+      
+        const archivo = input.files[0];
+        const lector = new FileReader();
+      
+        lector.onload = () => {
+          const buffer = lector.result as ArrayBuffer;
+          const contenido = new Uint8Array(buffer);
+          __btImport.classList.add('success')
+          
+          this.ldoc.import(contenido);
+          
+          startTimer(() => {
+            __btImport.classList.remove('success')
+            __loader.hidePopover()
+            __btImport.disabled = false;
+          }, 200)
+        };
+        
+        lector.onerror = (error) => {
+          console.error("Error al leer el archivo:", error);
+          __btImport.classList.add('error')
+          
+          startTimer(() => {
+            __btImport.classList.remove('error')
+            __loader.hidePopover()
+            __btImport.disabled = false;
+          }, 200)
+        };
+      
+        lector.readAsArrayBuffer(archivo!);
+    })
+    __import.addEventListener('cancel', e => {
+      __loader.hidePopover()
+      __btImport.disabled = false;
+    })
   }
 }
 
 const app = new App();
-
 app.init()

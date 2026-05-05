@@ -21,7 +21,6 @@ class NoneCompositor implements Compositor {
   get(index: number): Node<"project" | "task"> | undefined {
     throw new Error("Method not implemented.");
   }
-  
 }
 
 export class SideProject implements Node<'project'> {
