@@ -1,160 +1,98 @@
 import { LocalDatabase } from "../storage/indexed";
+
+console.info("document.readyState:", document.readyState);
+
+const store = new LocalDatabase();
+const lorocontent = store.get('dev-test');
+
 import { LoroDoc } from "loro-crdt";
-import { FractosState, FractosView } from "@glifox/fractos";
+import { FractosState, FractosView, type ViewMode } from "@glifox/fractos";
 import { renderer } from "../components/implementations/renderer";
 import { Keymap } from '../keymap/handler'
 import { SideProject } from "../components/web/side-project";
+import { domReady, startTimer } from "../utils";
 import type { NewProjectDialog } from "../components/web/new-project.dialog";
 
-const startTimer = (oncomplete: () => void, duration: number) => {
-  let timeoutId: number | null = null;
-  const startTime = Date.now();
-  
-  const timeoutHandler = () => {
-    if (Date.now() - startTime >= duration) {
-      oncomplete();
-      window.cancelAnimationFrame(timeoutId!);
-    } else {
-      timeoutId = requestAnimationFrame(timeoutHandler);
-    }
-  };
+class App {
+  ldoc = new LoroDoc();
+  state = new FractosState({ doc: this.ldoc });
+  mainView: FractosView | null = null;
+  sideView: FractosView | null = null;
 
-  timeoutId = requestAnimationFrame(timeoutHandler);
+  async init() {
+    await Promise.all([
+      lorocontent.then((c) => { if (c) this.ldoc.import(c) }),
+      domReady,
+    ]);
+
+    document.querySelector('.loader')?.remove();
+    
+    this.main();
+    this.side();
+
+    this.buttons();
+  }
+  
+  async main() {
+    const __view = document.getElementById("view")!;
+    
+    const dialog = document.getElementById('new-project--dialog') as NewProjectDialog;
+    dialog.init(this.state);
+
+    __view.addEventListener('fractos:view:mode', (event) => {
+      // @ts-ignore
+      const mode: ViewMode = event.detail;
+      
+      document.querySelector('.side-project.active')?.classList.remove('active');
+      
+      if (mode.type === 'selected' && mode.project) {
+        const target = document.querySelector(`.side-project[data-treeid="${mode.project}"]`);
+        target?.classList.add('active');
+      }
+    })
+    
+    this.mainView = new FractosView({
+      state: this.state,
+      parent: __view,
+      renderer,
+    })
+  
+    const keymap = Keymap.subscribe(this.mainView);
+  }
+  
+  async side() {
+    const __side = document.getElementById("list")!;
+  
+    this.sideView = new FractosView({
+      state: this.state,
+      parent: __side,
+      renderer: {
+        task: () => { throw new Error("Unreachable state") },
+        project: (_, n) => new SideProject(() => this.mainView, n)
+      }
+    })
+  }
+
+  async buttons() {
+    const __btImport = document.getElementById('import')! as HTMLButtonElement;
+    const __btExport = document.getElementById('export')! as HTMLButtonElement;
+    const __import = document.getElementById('input-archivo')! as HTMLInputElement;
+  
+    const __btSave = document.getElementById('save')! as HTMLButtonElement;
+    __btSave.addEventListener('click', _ => {
+      store.set('dev-test', this.ldoc.export({ mode: "snapshot" })).then(() => { 
+        __btSave.innerText = '🚀 Saved!!!!'
+        __btSave.disabled = true;
+        
+        startTimer(() => { 
+          __btSave.innerText = 'save'
+          __btSave.disabled = false;
+        }, 300);
+      })
+    })
+  }
 }
 
-const __view = document.getElementById("view")!;
+const app = new App();
 
-const store = new LocalDatabase();
-
-const ldoc = new LoroDoc();
-
-const state = new FractosState({ doc: ldoc });
-const mainView = new FractosView({
-  state: state,
-  parent: __view,
-  renderer,
-})
-
-const sideView = new FractosView({
-  state: state,
-  parent: document.getElementById("list")!,
-  renderer: {
-    task: () => { throw new Error("Unreachable state") },
-    project: (_, n) => new SideProject(mainView, n)
-  }
-})
-
-const __btImport = document.getElementById('import')! as HTMLButtonElement;
-const __btExport = document.getElementById('export')! as HTMLButtonElement;
-const __import = document.getElementById('input-archivo')! as HTMLInputElement;
-
-__import.addEventListener('cancel', () => {
-  __view.querySelector('.loader')?.remove()
-})
-
-__import.addEventListener('change', (evento: Event) => {
-  const input = evento.target as HTMLInputElement;
-  if (!input.files || input.files.length === 0) return;
-
-  const archivo = input.files[0];
-  const lector = new FileReader();
-
-  lector.onload = () => {
-    __view.querySelector('.loader')?.remove()
-    const buffer = lector.result as ArrayBuffer;
-    const contenido = new Uint8Array(buffer);
-    __btImport.classList.add('success')
-    
-    ldoc.import(contenido);
-    mainView.setMode({ type: "all" });
-    sideView.setMode({ type: "all" });
-    
-    
-    startTimer(() => {
-      __btImport.classList.remove('success')
-      __btImport.disabled = false;
-    }, 200)
-  };
-
-  lector.onerror = (error) => {
-    console.error("Error al leer el archivo:", error);
-    __btImport.classList.add('error')
-    
-    startTimer(() => {
-      __btImport.classList.remove('error')
-      __view.querySelector('.loader')?.remove()
-      __btImport.disabled = false;
-    }, 200)
-  };
-
-  lector.readAsArrayBuffer(archivo!);
-});
-
-__btImport.addEventListener('click', () => {
-  __btImport.disabled = true;
-  __view.innerHTML = "<div class=\"loader\"></div>";
-  __import.click()
-})
-
-__btExport.addEventListener('click', () => {
-  __btExport.disabled = true;
-  let content = ldoc.export({ mode: "snapshot" })
-  
-  const cleanUint8Array = new Uint8Array(content); 
-  const blob = new Blob([cleanUint8Array], { type: 'application/octet-stream' });
-
-  const url = window.URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-
-  anchor.href = url;
-  anchor.download = 'fractos.loro';
-
-  anchor.style.display = 'none';
-  document.body.appendChild(anchor);
-  anchor.click();
-
-  document.body.removeChild(anchor);
-  window.URL.revokeObjectURL(url);
-  __btExport.disabled = false;
-})
-
-document.getElementById('save')!.addEventListener('click', _ => {
-  store.set('dev-test', ldoc.export({ mode: "snapshot" })).then(() => { 
-    const button = document.getElementById('save')! as HTMLButtonElement;
-    
-    console.info("button:", button);
-    button.innerText = '🚀 Saved!!!!'
-    button.disabled = true;
-    
-    startTimer(() => { 
-      button.innerText = 'save'
-      button.disabled = false;
-    }, 600);
-  })
-})
-
-
-store.get('dev-test').then(v => {
-  if (v) ldoc.import(v);
-  mainView.setMode({ type: "all" });
-  sideView.setMode({ type: "all" });
-  
-  document.querySelector('.loader')?.remove()
-  
-  const keymap = Keymap.subscribe(mainView);
-  
-  const dialog = document.getElementById('new-project--dialog') as NewProjectDialog;
-  dialog.init(state);
-
-  const showAll = document.getElementById("all")! as HTMLButtonElement;
-
-  showAll?.addEventListener('click', () => {
-    requestAnimationFrame(() => {
-      mainView.setMode({ type: 'all' });
-      
-      const prs = document.querySelectorAll('.side-project.active')
-      prs.forEach((__element) => __element.classList.remove('active'))
-      showAll.classList.add('active')
-    })
-  })
-})
+app.init()

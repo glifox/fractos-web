@@ -11,7 +11,7 @@
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.41.1",
     "@glifox/desmos": "^0.1.2",
-    "@glifox/fractos": "^0.1.0",
+    "@glifox/fractos": "link:../fractos",
     "@glifox/gnosis": "^0.0.19",
     "codemirror": "^6.0.2",
     "loro-crdt": "^1.12.1",

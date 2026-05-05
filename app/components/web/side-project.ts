@@ -34,7 +34,7 @@ export class SideProject implements Node<'project'> {
   private percentage : HTMLSpanElement;
   private title : HTMLSpanElement;
   
-  constructor(private view: FractosView, node: FractosNode) {
+  constructor(private view: () => FractosView | null, node: FractosNode) {
     this.treeid = node.treeid;
     this.element = document.createElement('button');
     this.element.classList.add('side-project');
@@ -49,14 +49,10 @@ export class SideProject implements Node<'project'> {
     this.setPercentage(`${node.get('percentage') ?? 0}`);
     
     this.element.addEventListener('click', () => {
-      this.view.setMode({
-        type: "selected",
-        project: this.treeid,
-      })
-
-      const prs = document.querySelectorAll('.side-project.active')
-      prs.forEach((__element) => __element.classList.remove('active'))
-      this.element.classList.add('active')
+      const view = this.view();
+      if (!view) return;
+      
+      view.setMode({ type: "selected", project: this.treeid })
     })
   }
   
