@@ -1,6 +1,6 @@
 import { createKeybindingsHandler } from "@glifox/desmos";
 import { EditorView, minimalSetup } from "codemirror";
-import { EditorSelection, EditorState } from "@codemirror/state";
+import { Compartment, EditorSelection, EditorState } from "@codemirror/state";
 import { keymap, placeholder } from "@codemirror/view";
 import { gnosis } from "@glifox/gnosis";
 
@@ -8,6 +8,8 @@ export type Callbacks = {
   onConfirm: (view: EditorView, initialValue: string) => void,
   onCancel?: (view: EditorView, initialValue: string) => void,
 }
+
+const themeConfig = new Compartment();
 
 export const BaseEditor = (
   parent: HTMLElement,
@@ -41,13 +43,24 @@ export const BaseEditor = (
     ? EditorState.transactionFilter
       .of(tr => tr.newDoc.lines > 1 ? [] : [tr])
     : [];
-  
+
+  const current = (document.documentElement.getAttribute('theme') ?? "ligth") === "dark";
+  const theme = EditorView.darkTheme.of(current);
+
+  document.addEventListener('th-changed', (e) => {
+    view.dispatch({
+      // @ts-ignore
+      effects: themeConfig.reconfigure(EditorView.darkTheme.of(e.detail.theme === "dark"))
+    })
+  })
+
   const view = new EditorView({
     doc: ``,
     extensions: [
       keymap.of([ { key: "Ctrl-Enter", run: () => true, } ]),
       minimalSetup,
       EditorView.lineWrapping,
+      themeConfig.of(theme),
       oneline,
       gnosis(),
       placeholder(options?.placeholder ?? ""),
