@@ -94,6 +94,48 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       return
     }
   },
+  'ctrl-arrowup': (e, c, v) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      e.preventDefault()
+      const __prevSibling = c.task?.previousTaskSibling;
+      if (!__prevSibling) return
+
+      v.state.moveRelativeTo(
+        { id: c.task.treeid },
+        {
+          type: 'before',
+          base: {
+            id: __prevSibling.treeid
+          }
+        }
+      )
+
+      requestAnimationFrame(() => c.task?.focus() )
+      return
+    }
+  },
+  'ctrl-arrowdown': (e, c, v) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      e.preventDefault()
+      const __nextSibling = c.task?.nextTaskSibling;
+      if (!__nextSibling) return
+
+      v.state.moveRelativeTo(
+        { id: c.task.treeid },
+        {
+          type: 'after',
+          base: {
+            id: __nextSibling.treeid
+          }
+        }
+      )
+      
+      requestAnimationFrame(() => c.task?.focus() )
+      return
+    }
+  },
   'e': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
