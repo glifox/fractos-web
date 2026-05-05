@@ -1,9 +1,11 @@
+import "./circular-progress";
 import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type ProjectData } from "@glifox/fractos";
 import type { TreeID } from "loro-crdt";
 import { taskTag, type FractosTaskElement } from "./task";
 import { BaseEditor } from "../class/base";
 import { Transaction } from "@codemirror/state";
 import type { EditorView } from "codemirror";
+import type { CircularProgress } from "./circular-progress";
 
 
 export const projectElements = {
@@ -19,9 +21,11 @@ type ProjectElement = keyof typeof projectElements;
 
 const innerHTML = /* html */`
   <div class="--pr-metadata ${projectElements.focus.class}" tabindex="0">
-    <h2 class="${projectElements.title.class}"></h2>
-    <span class="${projectElements.percentage.class}"></span>
-    <p class="${projectElements.description.class}"></p>
+    <circular-progress class="${projectElements.percentage.class}" percent="0"></circular-progress>
+    <div>
+        <h2 class="${projectElements.title.class}"></h2>
+        <p class="${projectElements.description.class}"></p>
+    </div>
   </div>
   <div class="${projectElements.children.class}"></div>
 `;
@@ -30,7 +34,7 @@ export class FractosProjectElement extends HTMLElement implements Node<'project'
   private __root: HTMLElement;
   private __title: HTMLElement;
   private __description: HTMLElement;
-  private __percentage: HTMLElement;
+  private __percentage: CircularProgress;
   private __children: HTMLElement;
   private __focus: HTMLElement;
 
@@ -58,7 +62,7 @@ export class FractosProjectElement extends HTMLElement implements Node<'project'
     this.__title = this.__root.querySelector(projectElements.title.class.dot) as HTMLElement;
     this.__focus = this.__root.querySelector(projectElements.focus.class.dot) as HTMLElement;
     this.__description = this.__root.querySelector(projectElements.description.class.dot) as HTMLElement;
-    this.__percentage = this.__root.querySelector(projectElements.percentage.class.dot) as HTMLElement;
+    this.__percentage = this.__root.querySelector(projectElements.percentage.class.dot) as CircularProgress;
     this.__children = this.__root.querySelector(projectElements.children.class.dot) as HTMLElement;
 
     this.cmTitle = this.titleEditor(this.__title);
@@ -97,7 +101,7 @@ export class FractosProjectElement extends HTMLElement implements Node<'project'
   }
   
   setPercetage = (percentage: number) => {
-    this.__percentage.innerText = `${percentage}%`;
+    this.__percentage.percent = '' + percentage
   }
   
   setDescription = (description: string) => {
