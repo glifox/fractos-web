@@ -56,6 +56,16 @@
     margin-right: 8px;
 }
 
+.--ts-indicator {
+    display: inline-flex;
+    font-size: .6rem;
+    padding-inline: 2px;
+}
+
+.--ts-indicator.closed {
+    color: var(--ctp-red);
+}
+
 .--ts-checkbox {
     display: inline;
 }
@@ -91,7 +101,7 @@
     content: '';
     position: absolute;
 
-    left: 12px;
+    left: calc(1ch - 2px);
     
     height: 100%;
     width: 2px;

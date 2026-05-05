@@ -1,7 +1,7 @@
 import "../web/linear-progress";
 
 import type { EditorView } from "codemirror";
-import { FractosCompositor, type Compositor, type FractosNode, type FractosState, type Node, type TaskData } from "@glifox/fractos";
+import { FractosCompositor, FractosView, type Compositor, type FractosNode, type FractosState, type Node, type TaskData } from "@glifox/fractos";
 import type { TreeID } from "loro-crdt";
 import { EditorSelection, Transaction } from "@codemirror/state";
 import { BaseEditor, type Callbacks } from "../class/base";
@@ -19,12 +19,14 @@ export const taskElements = {
   checkbox: { class: "--ts-checkbox" },
   percentage: { class: "--ts-percentage" },
   children: { class: "--ts-children" },
+  indicator: { class: "--ts-indicator" },
 } as const;
 
 type TaskElement = keyof typeof taskElements;
 
 const innerHTML = /* html */`
 <div class="${taskElements.content.class}" tabindex="0">
+    <span class="${taskElements.indicator.class}"></span>
     <input class="${taskElements.checkbox.class}" type="checkbox"/>
     <h3 class="${taskElements.title.class}"></h3>
     <linear-progress class="${taskElements.percentage.class}"></linear-progress>
@@ -42,11 +44,17 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
   private __checkbox: HTMLInputElement;
   private __percentage: HTMLElement;
   private __children: HTMLElement;
+  private __indicator: HTMLElement;
   
   private cmTitle: EditorView;
   private state?: FractosState;
+  private view?: FractosView;
+
+  // @ts-ignore
+  private __showchildren: boolean;
+  
   compositor: Compositor;
-  showChildren: boolean = true;
+  get showChildren() { return this.__showchildren };
 
   private _percentage: number = 0;
   override tagName: string = taskTag;
@@ -72,6 +80,9 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
     this.__checkbox = this.__root.querySelector(taskElements.checkbox.class.dot)! as HTMLInputElement;
     this.__percentage = this.__root.querySelector(taskElements.percentage.class.dot) as HTMLElement;
     this.__children = this.__root.querySelector(taskElements.children.class.dot) as HTMLElement;
+    this.__indicator = this.__root.querySelector(taskElements.indicator.class.dot) as HTMLElement;
+
+    this.showChildrenMode(true);
     
     this.cmTitle = BaseEditor(this.__title, {
       onConfirm: (view, inital) => { 
@@ -111,8 +122,9 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
     this.setEvents()
   }
   
-  init(state: FractosState, node: FractosNode) {
-    this.state = state;
+  init(view: FractosView, node: FractosNode) {
+    this.state = view.state;
+    this.view = view;
     this.appendChild(this.__root);
     this.dataset.treeid = node.treeid;
   }
@@ -150,6 +162,30 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
     this.__percentage.dataset.percentage = `${percentage}`;
     this._percentage = percentage;
   }
+
+  showChildrenMode(mode: boolean | 'toggle') {
+    const old = this.__showchildren;
+    if (mode === 'toggle') this.__showchildren = !old
+    else this.__showchildren = mode;
+    
+    if (this.__showchildren == old) return
+
+    this.reloadChildren()
+  }
+
+  private reloadChildren() {
+    if (this.__showchildren) {
+      this.__indicator.innerText = '▼'
+      this.__indicator.classList.remove('closed')
+      this.view?._renderChildren(this)
+    }
+    else {
+      this.__indicator.innerText = '▶'
+      this.__indicator.classList.add('closed')
+      this.compositor.parent.innerHTML = '';
+      this.compositor = new FractosCompositor(this.compositor.parent);
+    }
+  }
   
   // Internals
   private events: { [Z in TaskElement]?: { [K in keyof HTMLElementEventMap]?: EventListener } } = {
@@ -166,6 +202,7 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
       checkbox: this.__checkbox,
       percentage: this.__percentage,
       children: this.__children,
+      indicator: this.__indicator
     }
     
     for (const element of Object.keys(elements)) {

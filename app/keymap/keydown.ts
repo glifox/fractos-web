@@ -55,6 +55,21 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       project.focus();
     }
   },
+  'ArrowLeft': (e, c) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      e.preventDefault()
+      c.task.showChildrenMode(false)
+    }
+  },
+  'ArrowRight': (e, c) => {
+    if (c.task) {
+      if (c.task.isEditing) return
+      e.preventDefault()
+      console.info("rigth:");
+      c.task.showChildrenMode(true)
+    }
+  },
   'Space': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return

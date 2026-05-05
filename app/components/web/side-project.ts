@@ -3,6 +3,8 @@ import type { TreeID } from "loro-crdt";
 import { marked } from "marked";
 
 class NoneCompositor implements Compositor {
+  get parent(): HTMLElement { throw new Error("Method not implemented.") };
+  
   push(node: Node<"project" | "task">): void {
     throw new Error("Method not implemented.");
   }
