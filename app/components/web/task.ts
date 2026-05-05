@@ -118,7 +118,7 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
     });
     
     this.compositor = new FractosCompositor(this.__children);
-    
+    this.compositor.addChangeListener(() => this.updateChildrenExpantion())
     this.setEvents()
   }
   
@@ -170,14 +170,20 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
     
     if (this.__showchildren == old) return
 
-    this.reloadChildren()
+    this.updateChildrenExpantion()
   }
 
-  private reloadChildren() {
+  private updateChildrenExpantion() {
     if (this.__showchildren) {
       this.__indicator.innerText = '▼'
       this.__indicator.classList.remove('closed')
       this.view?._renderChildren(this)
+      
+      if (!(this.compositor) || this.compositor.length == 0) {
+        this.__indicator.innerText = '●'
+        this.__indicator.classList.add('empty')
+      }
+      else this.__indicator.classList.remove('empty')
     }
     else {
       this.__indicator.innerText = '▶'
