@@ -50,12 +50,14 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
   private cmTitle: EditorView;
   private state?: FractosState;
   private view?: FractosView;
+  private node?: FractosNode;
 
-  // @ts-ignore
-  private __showchildren: boolean;
+  private config = {
+    showChildren: false
+  };
   
   compositor: Compositor;
-  get showChildren() { return this.__showchildren };
+  get showChildren() { return this.config.showChildren };
 
   private _percentage: number = 0;
   override tagName: string = taskTag;
@@ -127,7 +129,11 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
     this.state = view.state;
     this.view = view;
     this.appendChild(this.__root);
+    this.node = node;
     this.dataset.treeid = node.treeid;
+
+    this.loadConfig()
+    this.updateChildrenExpantion()
   }
   
   new(callbacks?: Callbacks) {
@@ -166,23 +172,38 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
   }
 
   showChildrenMode(mode: boolean | 'toggle') {
-    const old = this.__showchildren;
-    if (mode === 'toggle') this.__showchildren = !old
-    else this.__showchildren = mode;
+    const old = this.config.showChildren;
+    if (mode === 'toggle') this.config.showChildren = !old
+    else this.config.showChildren = mode;
     
-    if (this.__showchildren == old) return
+    if (this.config.showChildren == old) return
 
     this.updateChildrenExpantion()
+    this.saveConfig()
+  }
+
+  private saveConfig() {
+    if (this.treeid === undefined) return;
+    localStorage.setItem(this.treeid, JSON.stringify(this.config));
+  }
+
+  private loadConfig() {
+    if (this.treeid === undefined) return;
+    const saved = localStorage.getItem(this.treeid);
+
+    if (saved == null) return;
+
+    try { this.config = { ...JSON.parse(saved) } }
+    catch { return }
   }
 
   private updateChildrenExpantion() {
-    let length = this.compositor?.length ?? 0;
+    const hasChildren = this.node?.hasChildren;
     
-    if (this.__showchildren) {
+    if (this.config.showChildren) {
       this.__indicator.innerText = '▼'
       this.__indicator.classList.remove('closed')
       this.view?._renderChildren(this)
-      length = this.compositor?.length ?? 0;
     }
     else {
       this.__indicator.innerText = '▶'
@@ -191,7 +212,7 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
       this.compositor = new FractosCompositor(this.compositor.parent);
     }
     
-    if (length == 0) {
+    if (!hasChildren) {
       this.__indicator.innerText = '●'
       this.__indicator.classList.add('empty')
     }
