@@ -1,6 +1,3 @@
-import { th } from '@feraxjs/thselector'
-th.init();
-
 import { LocalDatabase } from "../storage/indexed";
 
 const store = new LocalDatabase();
