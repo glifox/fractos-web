@@ -10,6 +10,7 @@ import { Keymap } from '../keymap/handler'
 import { SideProject } from "../components/web/side-project";
 import { domReady, downloadContent, startTimer } from "../utils";
 import type { NewProjectDialog } from "../components/web/new-project.dialog";
+import { Clipboard } from "../keymap/clipboard";
 
 class App {
   ldoc = new LoroDoc();
@@ -69,6 +70,7 @@ class App {
     })
   
     const keymap = Keymap.subscribe(this.mainView, this.clipboard);
+    const clipboard = Clipboard.subscribe(this.mainView);
   }
   
   async side() {

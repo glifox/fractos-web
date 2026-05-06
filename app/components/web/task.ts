@@ -37,6 +37,7 @@ const innerHTML = /* html */`
 
 export class FractosTaskElement extends HTMLElement implements Node<'task'> {
   type = "task" as const;
+  tasktitle: string = "";
   
   private __root: HTMLElement;
   private __title: HTMLElement;
@@ -148,6 +149,7 @@ export class FractosTaskElement extends HTMLElement implements Node<'task'> {
   }
   
   setTitle = (title: string) => {
+    this.tasktitle = title;
     this.cmTitle.dispatch({
       changes: { from: 0, insert: title, to: this.cmTitle.state.doc.length },
       annotations: [ Transaction.addToHistory.of(false) ]

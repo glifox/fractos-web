@@ -12,7 +12,7 @@
     "@codemirror/view": "^6.41.1",
     "@feraxjs/thselector": "^1.0.3",
     "@glifox/desmos": "^0.1.2",
-    "@glifox/fractos": "0.1.3",
+    "@glifox/fractos": "0.1.4",
     "@glifox/gnosis": "^0.0.19",
     "codemirror": "^6.0.2",
     "loro-crdt": "^1.12.1",

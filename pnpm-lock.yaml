@@ -24,8 +24,8 @@ importers:
         specifier: ^0.1.2
         version: 0.1.2
       '@glifox/fractos':
-        specifier: 0.1.3
-        version: 0.1.3(typescript@5.9.3)
+        specifier: 0.1.4
+        version: 0.1.4(typescript@5.9.3)
       '@glifox/gnosis':
         specifier: ^0.0.19
         version: 0.0.19
@@ -327,10 +327,10 @@ packages:
   '@glifox/desmos@0.1.2':
     resolution: {integrity: sha512-oM9rBoJ7VRNBJrMkJISsjWFjlxq9FdUbHtcl9ZCrtcGcSQt2j5fM2Ji6igfbUg4fxpeNqJ1VSN/4UY/hViMNZA==}
 
-  '@glifox/fractos@0.1.3':
-    resolution: {integrity: sha512-NQlakJXP8aU8Q+Eszrrcw4NqABFMNW7XDb7Oym/WQiqBrlK8q4M8wKfMZGoKqJuiRIDMND+KBlqsgKpZBEtMiQ==}
+  '@glifox/fractos@0.1.4':
+    resolution: {integrity: sha512-EV+PAaLucsD6/RYUyvG3Ox1B/b2378Z7ZFFeM05tJ1LCk3RSUDUEm/ulH8FtsrXBIYDhvm0xUIARm8vp2eSqUQ==}
     peerDependencies:
-      typescript: ^5
+      typescript: ^5.9.3
 
   '@glifox/gnosis@0.0.19':
     resolution: {integrity: sha512-XSAmMcjqGkMOyV2O5vQfzCuIfpVJUA02QJgzQEfSg8y5L4XARB8C60KA+5EH9exSFHgTI6TqfZAD8SrdOraZNA==}
@@ -1300,7 +1300,7 @@ snapshots:
 
   '@glifox/desmos@0.1.2': {}
 
-  '@glifox/fractos@0.1.3(typescript@5.9.3)':
+  '@glifox/fractos@0.1.4(typescript@5.9.3)':
     dependencies:
       loro-crdt: 1.12.1
       typescript: 5.9.3
