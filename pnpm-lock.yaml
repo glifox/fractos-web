@@ -17,6 +17,9 @@ importers:
       '@codemirror/view':
         specifier: ^6.41.1
         version: 6.41.1
+      '@feraxjs/thselector':
+        specifier: ^1.0.3
+        version: 1.0.3
       '@glifox/desmos':
         specifier: ^0.1.2
         version: 0.1.2
@@ -317,6 +320,9 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@feraxjs/thselector@1.0.3':
+    resolution: {integrity: sha512-wkafaZHYLUZ0truXNP3YUIMAiRk8h4bbUFb8uZbSh1PGOw95OvBqxTo7wmPgv0mhXekrVZSQxK3ZatR55BUw9Q==}
 
   '@glifox/desmos@0.1.2':
     resolution: {integrity: sha512-oM9rBoJ7VRNBJrMkJISsjWFjlxq9FdUbHtcl9ZCrtcGcSQt2j5fM2Ji6igfbUg4fxpeNqJ1VSN/4UY/hViMNZA==}
@@ -1289,6 +1295,8 @@ snapshots:
 
   '@esbuild/win32-x64@0.28.0':
     optional: true
+
+  '@feraxjs/thselector@1.0.3': {}
 
   '@glifox/desmos@0.1.2': {}
 

@@ -1,6 +1,7 @@
-import { LocalDatabase } from "../storage/indexed";
+import { th } from '@feraxjs/thselector'
+th.init();
 
-console.info("document.readyState:", document.readyState);
+import { LocalDatabase } from "../storage/indexed";
 
 const store = new LocalDatabase();
 const lorocontent = store.get('dev-test');

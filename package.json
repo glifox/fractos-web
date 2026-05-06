@@ -10,6 +10,7 @@
     "@catppuccin/codemirror": "^1.0.3",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.41.1",
+    "@feraxjs/thselector": "^1.0.3",
     "@glifox/desmos": "^0.1.2",
     "@glifox/fractos": "0.1.2",
     "@glifox/gnosis": "^0.0.19",

@@ -179,7 +179,7 @@
     background-color: var(--ctp-surface1);
 }
 
-[data-lucide] {
+.links .lucide {
     height: 16px;
     margin: 0;
 }

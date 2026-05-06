@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/svg+xml" href="../../assets/fractos.svg">
 	<title>[fractos] Home </title>
+    <script src="home.ts" type="module"></script>
     <link rel="stylesheet" href="styles/layout.css">
     <link rel="stylesheet" href="styles/dialogs.css">
     <link rel="stylesheet" href="styles/sidebar.css">
@@ -12,10 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/dark/mocha.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/light/latte.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://unpkg.com/lucide@v1.14.0"></script>
     <script src="../components/web/new-project.dialog.ts" type="module"></script>
-    <script src="home.ts" type="module"></script>
-    <script src="https://cdn.jsdelivr.net/gh/feraxjs/thselector@v0.1.0/src/core.js"></script>
 </head>
 <body>
     <section class="side panel">
@@ -34,12 +32,16 @@
         </section>
         <button id="save">save</button>
         <section class="links">
-            <a href="https://github.com/glifox/fractos" target="_blank" class="github-icon">
+            <a href="https://github.com/glifox/fractos-web" target="_blank" class="github-icon">
               <i class="fab fa-github"></i>
             </a>
             <span>
-                <button id="import"><i data-lucide="file-up"></i></button>
-                <button id="export"><i data-lucide="file-down"></i></button>
+                <button id="import">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-up-icon lucide-file-up"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/></svg>
+                </button>
+                <button id="export">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-down-icon lucide-file-down"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>
+                </button>
                 <button popovertarget="keybinds" class="pop-keys">?</button>
             </span>
         </section>
@@ -73,10 +75,6 @@
     <dialog id="loader" popover="manual">
         <div class="loader"></div>
     </dialog>
-    
-    <script>
-        lucide.createIcons();
-    </script>
 
     <input type="file" id="input-archivo" style="display: none" accept=".loro"/>
 </body>
