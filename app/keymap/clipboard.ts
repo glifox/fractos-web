@@ -75,15 +75,16 @@ const oncopy: ClipboardListener = (e, c, view) => {
 }
 
 const onpaste: ClipboardListener = (e, c, view) => {
-  if (!(c.task)) return;
+  const parent = c.task?.treeid ?? c.project?.treeid;
+  if (!parent) return;
+
   if (c.task && c.task.isEditing) return;
+  if (c.project && c.project.isEditing) return;
 
   const target = e.clipboardData?.getData(key);
-
   if (!target) return; 
-  if (target === c.task.treeid) return;
-  e.preventDefault();
+  if (target === parent) return;
 
-  const parent = c.task.treeid;
+  e.preventDefault();
   view.state.copy({ id: target as TreeID }, { id: parent })
 }
