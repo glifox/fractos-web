@@ -17,6 +17,7 @@ class App {
   state = new FractosState({ doc: this.ldoc });
   mainView: FractosView | null = null;
   sideView: FractosView | null = null;
+  chanel: BroadcastChannel;
 
   __view: HTMLElement | null = null;
   
@@ -32,6 +33,16 @@ class App {
     this.side();
 
     this.buttons();
+    
+    this.chanel = new BroadcastChannel('fractos:updates:ldco');
+
+    this.ldoc.subscribeLocalUpdates((e) => {
+      this.chanel.postMessage({ updates: e });
+    })
+    
+    this.chanel.onmessage = (evento) => {
+      this.ldoc.import(evento.data.updates)
+    };
   }
   
   async main() {
