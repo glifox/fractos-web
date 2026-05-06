@@ -5,6 +5,7 @@ import { taskTag, type FractosTaskElement } from "../components/web/task";
 
 import type { FractosView } from "@glifox/fractos";
 import { projectTag, type FractosProjectElement } from "../components/web/project";
+import type { UndoManager } from "loro-crdt";
 
 type PressType = "up" | "down";
 
@@ -36,7 +37,7 @@ const getContext: {
   }
 };
 
-const handler = (e: KeyboardEvent, type: PressType, view: FractosView) => {
+const handler = (e: KeyboardEvent, type: PressType, view: FractosView, undo: UndoManager) => {
   const context: Context = {};
   
   const task = getContext.task(e);
@@ -48,9 +49,9 @@ const handler = (e: KeyboardEvent, type: PressType, view: FractosView) => {
   const panel = getContext.panel(e);
   if (panel) context.panel = panel;
   
-  if (type == "down") keyboardHandlerDown(e, context, view)
+  if (type == "down") keyboardHandlerDown(e, context, view, undo)
   else
-  if (type == "up") keyboardHandlerUp(e, context, view)
+  if (type == "up") keyboardHandlerUp(e, context, view, undo)
 }
 
 
@@ -59,9 +60,9 @@ export const Keymap = (() => {
   let handlerDown: ((e: KeyboardEvent) => void) | null = null;
   
   return {
-    subscribe: (view: FractosView) => { 
-      handlerUp = (e: KeyboardEvent) => handler(e, "up", view)
-      handlerDown = (e: KeyboardEvent) => handler(e, "down", view)
+    subscribe: (view: FractosView, undo: UndoManager) => { 
+      handlerUp = (e: KeyboardEvent) => handler(e, "up", view, undo)
+      handlerDown = (e: KeyboardEvent) => handler(e, "down", view, undo)
       
       document.addEventListener('keyup', handlerUp)
       document.addEventListener('keydown', handlerDown)

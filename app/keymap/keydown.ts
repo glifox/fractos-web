@@ -4,6 +4,7 @@ import type { FractosView } from "@glifox/fractos"
 import type { Context } from "./handler"
 import { taskTag, type FractosTaskElement } from "../components/web/task"
 import { projectTag, type FractosProjectElement } from "../components/web/project"
+import type { UndoManager } from "loro-crdt"
 
 const keymap = {
   context: '',
@@ -12,7 +13,7 @@ const keymap = {
   }
 }
 
-export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>({
+export const keyboardHandler = createKeybindingsHandler<[Context, FractosView, UndoManager]>({
   'ArrowUp': (e, c) => {
     if (c.task) {
       if (c.task.isEditing) return
@@ -135,6 +136,14 @@ export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>(
       requestAnimationFrame(() => c.task?.focus() )
       return
     }
+  },
+  'ctrl-z': (e, c, v, u) => {
+    e.preventDefault()
+    u.undo()
+  },
+  'ctrl-y': (e, c, v, u) => {
+    e.preventDefault();
+    u.redo();
   },
   'e': (e, c) => {
     if (c.task) {

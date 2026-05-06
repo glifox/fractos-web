@@ -6,7 +6,7 @@ import { LocalDatabase } from "../storage/indexed";
 const store = new LocalDatabase();
 const lorocontent = store.get('dev-test');
 
-import { LoroDoc } from "loro-crdt";
+import { LoroDoc, UndoManager } from "loro-crdt";
 import { FractosState, FractosView, type ViewMode } from "@glifox/fractos";
 import { renderer } from "../components/implementations/renderer";
 import { Keymap } from '../keymap/handler'
@@ -16,6 +16,7 @@ import type { NewProjectDialog } from "../components/web/new-project.dialog";
 
 class App {
   ldoc = new LoroDoc();
+  clipboard = new UndoManager(this.ldoc, {});
   state = new FractosState({ doc: this.ldoc });
   mainView: FractosView | null = null;
   sideView: FractosView | null = null;
@@ -61,7 +62,7 @@ class App {
       renderer,
     })
   
-    const keymap = Keymap.subscribe(this.mainView);
+    const keymap = Keymap.subscribe(this.mainView, this.clipboard);
   }
   
   async side() {

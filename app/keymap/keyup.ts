@@ -4,6 +4,7 @@ import type { FractosState, FractosView } from "@glifox/fractos"
 import type { Context } from "./handler"
 import { FractosTaskElement, taskTag } from "../components/web/task"
 import type { FractosProjectElement } from "../components/web/project"
+import type { UndoManager } from "loro-crdt"
 // import { taskTag, type FractosTaskElement } from "../components/web/task"
 
 const newTask = (state: FractosState, parent: FractosProjectElement | FractosTaskElement, emiter: FractosProjectElement | FractosTaskElement) => {
@@ -33,7 +34,7 @@ const newTask = (state: FractosState, parent: FractosProjectElement | FractosTas
   newTask.editTitle()
 }
 
-export const keyboardHandler = createKeybindingsHandler<[Context, FractosView]>({
+export const keyboardHandler = createKeybindingsHandler<[Context, FractosView, UndoManager]>({
   'enter': (e, c, v) => {
     if (c.task) {
       if (c.task.isEditing) return
