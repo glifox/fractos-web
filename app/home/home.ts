@@ -73,7 +73,8 @@ class App {
   
   async side() {
     const __side = document.getElementById("list")!;
-  
+
+    __side.innerHTML = '';
     this.sideView = new FractosView({
       state: this.state,
       parent: __side,

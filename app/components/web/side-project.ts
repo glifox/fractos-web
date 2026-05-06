@@ -3,6 +3,10 @@ import type { TreeID } from "loro-crdt";
 import { marked } from "marked";
 
 class NoneCompositor implements Compositor {
+  length: number = 0;
+  addChangeListener(callback: (action: "insert" | "delete" | "move") => void): () => boolean {
+      throw new Error("Method not implemented.");
+  }
   get parent(): HTMLElement { throw new Error("Method not implemented.") };
   
   push(node: Node<"project" | "task">): void {

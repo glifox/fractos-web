@@ -127,6 +127,33 @@
     font-weight: 600;
 }
 
+.side-project.place-holder {
+    background-color: var(--bg-light);
+}
+
+.side-project.place-holder.c2 { opacity: .6; }
+.side-project.place-holder.c3 { opacity: .4; }
+.side-project.place-holder.c4 { opacity: .2; }
+
+.side-project.place-holder span {
+    color: transparent;
+    
+    background-color: var(--ctp-surface0);
+    background-image: linear-gradient(
+        90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.05) 50%, 
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
 .links {
     padding: 16px;
     display: flex;
