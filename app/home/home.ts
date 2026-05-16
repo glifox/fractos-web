@@ -1,6 +1,7 @@
 import { LocalDatabase } from "../storage/indexed";
 
 const store = new LocalDatabase();
+console.time("1. Lectura de IndexedDB");
 const lorocontent = store.get('dev-test');
 
 import { LoroDoc, UndoManager } from "loro-crdt";
@@ -24,7 +25,12 @@ class App {
   
   async init() {
     await Promise.all([
-      lorocontent.then((c) => { if (c) this.ldoc.import(c) }),
+      lorocontent.then((c) => {
+        console.timeEnd("1. Lectura de IndexedDB");
+        console.time("2. Importación en Loro");
+        if (c) this.ldoc.import(c)
+        console.timeEnd("2. Importación en Loro");
+      }),
       domReady,
     ]);
 
@@ -45,6 +51,7 @@ class App {
   }
   
   async main() {
+    console.time("3. creating main view")
     const __view = document.getElementById("view")!;
     this.__view = __view;
     
@@ -68,12 +75,15 @@ class App {
       parent: __view,
       renderer,
     })
+    console.timeEnd("3. creating main view")
   
     const keymap = Keymap.subscribe(this.mainView, this.clipboard);
     const clipboard = Clipboard.subscribe(this.mainView);
   }
   
   async side() {
+    console.time("4. creating side view")
+    
     const __side = document.getElementById("list")!;
 
     __side.innerHTML = '';
@@ -85,6 +95,8 @@ class App {
         project: (_, n) => new SideProject(() => this.mainView, n)
       }
     })
+    console.timeEnd("4. creating side view")
+    
   }
 
   async buttons() {
