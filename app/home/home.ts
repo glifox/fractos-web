@@ -36,10 +36,9 @@ class App {
 
     document.querySelector('.loader')?.remove();
     
-    this.main();
-    this.side();
-
     this.buttons();
+    this.side();
+    this.main();
 
     this.ldoc.subscribeLocalUpdates((e) => {
       this.chanel.postMessage({ updates: e });
@@ -51,7 +50,6 @@ class App {
   }
   
   async main() {
-    console.time("3. creating main view")
     const __view = document.getElementById("view")!;
     this.__view = __view;
     
@@ -70,10 +68,12 @@ class App {
       }
     })
     
+    console.time("3. creating main view");
     this.mainView = new FractosView({
       state: this.state,
       parent: __view,
       renderer,
+      // mode: { type: "none" }
     })
     console.timeEnd("3. creating main view")
   
