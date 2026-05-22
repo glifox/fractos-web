@@ -12,6 +12,7 @@ import { SideProject } from "../components/web/side-project";
 import { domReady, downloadContent, startTimer } from "../utils";
 import type { NewProjectDialog } from "../components/web/new-project.dialog";
 import { Clipboard } from "../keymap/clipboard";
+import { Connection } from "@glifox/guitite";
 
 class App {
   ldoc = new LoroDoc();
@@ -19,7 +20,9 @@ class App {
   state = new FractosState({ doc: this.ldoc });
   mainView: FractosView | null = null;
   sideView: FractosView | null = null;
-  chanel: BroadcastChannel = new BroadcastChannel('fractos:updates:ldco');
+  // chanel: BroadcastChannel = new BroadcastChannel('fractos:updates:ldco');
+  // @ts-ignore
+  connection: Connection;
 
   __view: HTMLElement | null = null;
   
@@ -34,19 +37,23 @@ class App {
       domReady,
     ]);
 
+    this.connection = new Connection('http://127.0.0.1:3030/ws/some', this.ldoc);
+    document.addEventListener("guitite:status-changed", e => {
+      document.getElementById("status")!.textContent = (e as CustomEvent).detail.status;
+    });
     document.querySelector('.loader')?.remove();
     
     this.buttons();
     this.side();
     this.main();
 
-    this.ldoc.subscribeLocalUpdates((e) => {
-      this.chanel.postMessage({ updates: e });
-    })
+    // this.ldoc.subscribeLocalUpdates((e) => {
+    //   this.chanel.postMessage({ updates: e });
+    // })
     
-    this.chanel.onmessage = (evento) => {
-      this.ldoc.import(evento.data.updates)
-    };
+    // this.chanel.onmessage = (evento) => {
+    //   this.ldoc.import(evento.data.updates)
+    // };
   }
   
   async main() {
@@ -79,6 +86,7 @@ class App {
   
     const keymap = Keymap.subscribe(this.mainView, this.clipboard);
     const clipboard = Clipboard.subscribe(this.mainView);
+    this.connection.tryconnect()
   }
   
   async side() {
