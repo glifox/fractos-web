@@ -183,4 +183,90 @@ export class LocalDatabase {
       getRequest.onerror = (event) => reject((event.target as IDBRequest).error);
     });
   }
+
+  public async getMultiple(keys: string[]): Promise<Map<string, Uint8Array | null>> {
+      const db = await this.dbPromise;
+      if (!db) throw new Error("Could not establish connection to IndexedDB.");
+  
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([this.storeName], "readonly");
+        const store = transaction.objectStore(this.storeName);
+        const results = new Map<string, Uint8Array | null>();
+        let pendingRequests = keys.length;
+  
+        if (pendingRequests === 0) {
+          resolve(results);
+          return;
+        }
+  
+        keys.forEach((key) => {
+          const getRequest = store.get(key);
+  
+          getRequest.onsuccess = (event) => {
+            const result = (event.target as IDBRequest).result;
+            
+            if (result && result.data instanceof Uint8Array) {
+              results.set(key, result.data);
+            } else {
+              results.set(key, null);
+            }
+  
+            pendingRequests--;
+            // Resolve the main promise when all requests finish
+            if (pendingRequests === 0) resolve(results);
+          };
+  
+          getRequest.onerror = (event) => reject((event.target as IDBRequest).error);
+        });
+      });
+    }
+  
+    public async getMultipleLists(keys: string[]): Promise<Map<string, Uint8Array[]>> {
+      // Force flush to guarantee memory updates are saved to disk
+      await this.flush();
+  
+      const db = await this.dbPromise;
+      if (!db) throw new Error("Could not establish connection to IndexedDB.");
+  
+      return new Promise((resolve, reject) => {
+        // Use 'readwrite' to allow deletion after reading the lists
+        const transaction = db.transaction([this.storeName], "readwrite");
+        const store = transaction.objectStore(this.storeName);
+        const results = new Map<string, Uint8Array[]>();
+        let pendingRequests = keys.length;
+  
+        if (pendingRequests === 0) {
+          resolve(results);
+          return;
+        }
+  
+        keys.forEach((key) => {
+          const getRequest = store.get(key);
+  
+          getRequest.onsuccess = (event) => {
+            const result = (event.target as IDBRequest).result;
+            let listToReturn: Uint8Array[] = [];
+  
+            if (result && Array.isArray(result.data)) {
+              listToReturn = result.data;
+            } else if (result && result.data instanceof Uint8Array) {
+              listToReturn = [result.data];
+            }
+  
+            results.set(key, listToReturn);
+  
+            // Delete the key if it contained data, just like the single getList
+            if (listToReturn.length > 0) {
+              store.delete(key);
+            }
+  
+            pendingRequests--;
+            // Resolve the main promise when all requests finish
+            if (pendingRequests === 0) resolve(results);
+          };
+  
+          getRequest.onerror = (event) => reject((event.target as IDBRequest).error);
+        });
+      });
+    }
 }
