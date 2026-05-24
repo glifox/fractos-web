@@ -30,8 +30,11 @@ importers:
         specifier: ^0.0.19
         version: 0.0.19
       '@glifox/guitite':
-        specifier: 0.1.1
-        version: 0.1.1(typescript@5.9.3)
+        specifier: 0.1.3
+        version: 0.1.3(typescript@5.9.3)
+      '@sqlite.org/sqlite-wasm':
+        specifier: 3.53.0-build1
+        version: 3.53.0-build1
       codemirror:
         specifier: ^6.0.2
         version: 6.0.2
@@ -338,8 +341,8 @@ packages:
   '@glifox/gnosis@0.0.19':
     resolution: {integrity: sha512-XSAmMcjqGkMOyV2O5vQfzCuIfpVJUA02QJgzQEfSg8y5L4XARB8C60KA+5EH9exSFHgTI6TqfZAD8SrdOraZNA==}
 
-  '@glifox/guitite@0.1.1':
-    resolution: {integrity: sha512-2H+MJNbHJ8vIr/D5wnFHO6uBFBOzbZn4IMBEz9528dpkAfWagSKxVl4V5zIcwerybEgo2Dn94preHWrYElXe5A==}
+  '@glifox/guitite@0.1.3':
+    resolution: {integrity: sha512-gEiuIodVKRKc090++W8z6fruLvRIQsqbOWptHPtbfp4n/4l0VWn71/AppiOQIkHqkaFcaB3d4HZ3pa/IbS3DcQ==}
     peerDependencies:
       typescript: ^5
 
@@ -650,6 +653,10 @@ packages:
     resolution: {integrity: sha512-Nd/SgG27WoA9e+/TdK74KnHz852TLa94ovOYySo/yMPuTmpckK/jIF2jSwS3g7ELSKXK13/cVdmg1Z/DaCWKxA==}
     cpu: [x64]
     os: [win32]
+
+  '@sqlite.org/sqlite-wasm@3.53.0-build1':
+    resolution: {integrity: sha512-PfWPWN2n+/37doa8oh2/oUXk4OOsRYZsxc1W1sDXIGb/Pu5Yrb+f2eyYpgQMGITVX7HVgxhs9P18Rc6I97ym/g==}
+    engines: {node: '>=22'}
 
   '@swc/core-darwin-arm64@1.15.33':
     resolution: {integrity: sha512-N+L0uXhuO7FIfzqwgxmzv0zIpV0qEp8wPX3QQs2p4atjMoywup2JTeDlXPw+z9pWJGCae3JjM+tZ6myclI+2gA==}
@@ -1356,7 +1363,7 @@ snapshots:
       codemirror: 6.0.2
       thememirror: 2.0.1(@codemirror/language@6.12.3)(@codemirror/state@6.6.0)(@codemirror/view@6.41.1)
 
-  '@glifox/guitite@0.1.1(typescript@5.9.3)':
+  '@glifox/guitite@0.1.3(typescript@5.9.3)':
     dependencies:
       loro-crdt: 1.12.1
       typescript: 5.9.3
@@ -1594,6 +1601,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.60.2':
     optional: true
+
+  '@sqlite.org/sqlite-wasm@3.53.0-build1': {}
 
   '@swc/core-darwin-arm64@1.15.33':
     optional: true

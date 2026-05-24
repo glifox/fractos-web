@@ -16,7 +16,8 @@
 }
 
 /* El fondo oscuro cuando el popover está abierto */
-#new-project--dialog::backdrop {
+:popover-open::backdrop,
+#loader::backdrop {
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
 }
@@ -113,11 +114,6 @@ button {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-}
-
-#loader::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px); /* Difumina el contenido de atrás */
 }
 
 #loader .loader {

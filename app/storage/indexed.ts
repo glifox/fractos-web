@@ -184,14 +184,14 @@ export class LocalDatabase {
     });
   }
 
-  public async getMultiple(keys: string[]): Promise<Map<string, Uint8Array | null>> {
+  public async getMultiple<K extends string>(...keys: K[]): Promise<Map<K, Uint8Array | null>> {
       const db = await this.dbPromise;
       if (!db) throw new Error("Could not establish connection to IndexedDB.");
   
       return new Promise((resolve, reject) => {
         const transaction = db.transaction([this.storeName], "readonly");
         const store = transaction.objectStore(this.storeName);
-        const results = new Map<string, Uint8Array | null>();
+        const results = new Map<K, Uint8Array | null>();
         let pendingRequests = keys.length;
   
         if (pendingRequests === 0) {
@@ -221,7 +221,7 @@ export class LocalDatabase {
       });
     }
   
-    public async getMultipleLists(keys: string[]): Promise<Map<string, Uint8Array[]>> {
+    public async getMultipleLists<K extends string>(...keys: K[]): Promise<Map<K, Uint8Array[]>> {
       // Force flush to guarantee memory updates are saved to disk
       await this.flush();
   
@@ -232,7 +232,7 @@ export class LocalDatabase {
         // Use 'readwrite' to allow deletion after reading the lists
         const transaction = db.transaction([this.storeName], "readwrite");
         const store = transaction.objectStore(this.storeName);
-        const results = new Map<string, Uint8Array[]>();
+        const results = new Map<K, Uint8Array[]>();
         let pendingRequests = keys.length;
   
         if (pendingRequests === 0) {
@@ -267,6 +267,27 @@ export class LocalDatabase {
   
           getRequest.onerror = (event) => reject((event.target as IDBRequest).error);
         });
+      });
+    }
+
+    public async delete(...keys: string[]): Promise<void> {
+      keys.forEach(key => this.pendingUpdates.delete(key));
+  
+      await this.flush();
+  
+      const db = await this.dbPromise;
+      if (!db) throw new Error("Could not establish connection to IndexedDB.");
+  
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([this.storeName], "readwrite");
+        const store = transaction.objectStore(this.storeName);
+
+        keys.forEach((key) => {
+          store.delete(key);
+        });
+  
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = (event) => reject((event.target as IDBRequest).error);
       });
     }
 }

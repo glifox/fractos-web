@@ -14,7 +14,8 @@
     "@glifox/desmos": "^0.1.2",
     "@glifox/fractos": "0.1.5",
     "@glifox/gnosis": "^0.0.19",
-    "@glifox/guitite": "0.1.1",
+    "@glifox/guitite": "0.1.3",
+    "@sqlite.org/sqlite-wasm": "3.53.0-build1",
     "codemirror": "^6.0.2",
     "loro-crdt": "^1.12.1",
     "marked": "^18.0.3"

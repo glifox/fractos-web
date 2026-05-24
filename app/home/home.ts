@@ -1,18 +1,33 @@
 import { LocalDatabase } from "../storage/indexed";
-
-const store = new LocalDatabase();
-console.time("1. Lectura de IndexedDB");
-const lorocontent = store.get('dev-test');
-
-import { LoroDoc, UndoManager } from "loro-crdt";
+import { LoroDoc, UndoManager, type Subscription } from "loro-crdt";
 import { FractosState, FractosView, type ViewMode } from "@glifox/fractos";
 import { renderer } from "../components/implementations/renderer";
 import { Keymap } from '../keymap/handler'
 import { SideProject } from "../components/web/side-project";
-import { domReady, downloadContent, startTimer } from "../utils";
+import { downloadContent, startTimer } from "../utils";
 import type { NewProjectDialog } from "../components/web/new-project.dialog";
 import { Clipboard } from "../keymap/clipboard";
 import { Connection } from "@glifox/guitite";
+
+const store = new LocalDatabase();
+const chanel = new BroadcastChannel('fractos:updates:ldco');
+
+enum keys {
+  updates = "loro-updates",
+  session = "session",
+  content = "dev-test",
+}
+
+const content = store.getMultiple(keys.content, keys.session);
+const updates = store.getList('loro-updates');
+
+
+
+type Session = {
+  host: string,
+  user: string,
+  pasw: string,
+}
 
 class App {
   ldoc = new LoroDoc();
@@ -20,40 +35,42 @@ class App {
   state = new FractosState({ doc: this.ldoc });
   mainView: FractosView | null = null;
   sideView: FractosView | null = null;
-  // chanel: BroadcastChannel = new BroadcastChannel('fractos:updates:ldco');
-  // @ts-ignore
-  connection: Connection;
+  connection: Connection | null = null;
+
+  channelSubscription: Subscription | null = null;
+
+  session: Session | null = null;
 
   __view: HTMLElement | null = null;
   
   async init() {
     await Promise.all([
-      lorocontent.then((c) => {
-        console.timeEnd("1. Lectura de IndexedDB");
-        console.time("2. Importación en Loro");
-        if (c) this.ldoc.import(c)
-        console.timeEnd("2. Importación en Loro");
+      content.then((c) => {
+        const snapshot = c.get(keys.content);
+        if (snapshot) this.ldoc.import(snapshot);
       }),
-      domReady,
+      updates.then((c) => {
+        if (c) {
+          this.ldoc.importBatch(c);
+          store.set(keys.content, this.ldoc.export({ mode: "snapshot" }))
+        }
+      }),
     ]);
 
-    this.connection = new Connection('http://127.0.0.1:3030/ws/some', this.ldoc);
-    document.addEventListener("guitite:status-changed", e => {
-      document.getElementById("status")!.textContent = (e as CustomEvent).detail.status;
-    });
     document.querySelector('.loader')?.remove();
     
     this.buttons();
     this.side();
     this.main();
 
-    // this.ldoc.subscribeLocalUpdates((e) => {
-    //   this.chanel.postMessage({ updates: e });
-    // })
+    this.ldoc.subscribeLocalUpdates((e) => {
+      chanel.postMessage({ updates: e });
+      store.append(keys.updates, e);
+    })
     
-    // this.chanel.onmessage = (evento) => {
-    //   this.ldoc.import(evento.data.updates)
-    // };
+    chanel.onmessage = (evento) => {
+      this.ldoc.import(evento.data.updates)
+    };
   }
   
   async main() {
@@ -86,7 +103,7 @@ class App {
   
     const keymap = Keymap.subscribe(this.mainView, this.clipboard);
     const clipboard = Clipboard.subscribe(this.mainView);
-    this.connection.tryconnect()
+    // this.connection.tryconnect()
   }
   
   async side() {
@@ -104,7 +121,6 @@ class App {
       }
     })
     console.timeEnd("4. creating side view")
-    
   }
 
   async buttons() {
@@ -115,14 +131,16 @@ class App {
   
     const __btSave = document.getElementById('save')! as HTMLButtonElement;
     __btSave.addEventListener('click', _ => {
-      store.set('dev-test', this.ldoc.export({ mode: "snapshot" })).then(() => { 
-        __btSave.innerText = '🚀 Saved!!!!'
-        __btSave.disabled = true;
+      store.delete(keys.updates).then(_ => {
+        store.set(keys.content, this.ldoc.export({ mode: "snapshot" })).then(() => {
+          __btSave.innerText = '🚀 Saved!!!!'
+          __btSave.disabled = true;
         
-        startTimer(() => { 
-          __btSave.innerText = 'save'
-          __btSave.disabled = false;
-        }, 300);
+          startTimer(() => {
+            __btSave.innerText = 'save'
+            __btSave.disabled = false;
+          }, 300);
+        })
       })
     })
 
@@ -176,6 +194,28 @@ class App {
       __loader.hidePopover()
       __btImport.disabled = false;
     })
+  }
+
+  setSession(session: Session) {
+    this.session = session;
+    this.saveSession();
+    this.tryConnect();
+  }
+
+  private saveSession(): Uint8Array {
+    const jsonString = JSON.stringify(this.session);
+    const encoder = new TextEncoder();
+    return encoder.encode(jsonString);
+  }
+
+  private restoreSession(data: Uint8Array) {
+    const decoder = new TextDecoder();
+      const jsonString = decoder.decode(data);
+      this.session = JSON.parse(jsonString);
+  }
+
+  tryConnect() {
+    
   }
 }
 
