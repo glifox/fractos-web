@@ -47,7 +47,12 @@ class App {
     await Promise.all([
       content.then((c) => {
         const snapshot = c.get(keys.content);
+        const session = c.get(keys.session);
         if (snapshot) this.ldoc.import(snapshot);
+        if (session) {
+          this.restoreSession(session);
+          this.tryConnect();
+        } 
       }),
       updates.then((c) => {
         if (c) {
@@ -64,7 +69,7 @@ class App {
     this.main();
 
     this.ldoc.subscribeLocalUpdates((e) => {
-      chanel.postMessage({ updates: e });
+      if (this.connection == null) chanel.postMessage({ updates: e });
       store.append(keys.updates, e);
     })
     
