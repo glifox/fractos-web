@@ -3,6 +3,13 @@ export class LocalDatabase {
   private storeName: string;
   private dbPromise: Promise<IDBDatabase | null>;
 
+  // Nuevas propiedades para manejar el buffer en memoria
+  private pendingUpdates = new Map<string, Uint8Array[]>();
+  private flushTimer: ReturnType<typeof setTimeout> | null = null;
+  private nextFlushPromise: Promise<void> | null = null;
+  private nextFlushResolve: (() => void) | null = null;
+  private nextFlushReject: ((error: any) => void) | null = null;
+
   constructor(dbName: string = "ByteStoreDB", storeName: string = "byteArrays") {
     this.dbName = dbName;
     this.storeName = storeName;
@@ -27,42 +34,18 @@ export class LocalDatabase {
 
   public async set(key: string, data: Uint8Array): Promise<void> {
     if (!(data instanceof Uint8Array)) throw new Error("El dato debe ser un Uint8Array.");
-
     const db = await this.dbPromise;
     if (!db) throw new Error("No se pudo establecer la conexión con IndexedDB.");
 
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
-      
       store.put({ key: key, data: data });
 
       transaction.oncomplete = () => resolve();
       transaction.onerror = (event) => reject((event.target as IDBRequest).error);
     });
   }
-
-  // public async setMany(records: { key: string; data: Uint8Array }[]): Promise<void> {
-  //   const db = await this.dbPromise;
-  //   if (!db) throw new Error("No se pudo establecer la conexión con IndexedDB.");
-
-  //   return new Promise((resolve, reject) => {
-  //     const transaction = db.transaction([this.storeName], "readwrite");
-  //     const store = transaction.objectStore(this.storeName);
-
-  //     for (const record of records) {
-  //       if (!(record.data instanceof Uint8Array)) {
-  //           transaction.abort();
-  //           reject(new Error(`El dato para la llave ${record.key} no es un Uint8Array.`));
-  //           return;
-  //       }
-  //       store.put({ key: record.key, data: record.data }); // Store Uint8Array directly
-  //     }
-
-  //     transaction.oncomplete = () => resolve();
-  //     transaction.onerror = (event) => reject((event.target as IDBRequest).error);
-  //   });
-  // }
 
   public async get(key: string): Promise<Uint8Array | null> {
     const db = await this.dbPromise;
@@ -75,13 +58,128 @@ export class LocalDatabase {
 
       getRequest.onsuccess = (event) => {
         const result = (event.target as IDBRequest).result;
-        // Result is directly returned as Uint8Array
-        if (result && result.data instanceof Uint8Array) {
-          resolve(result.data);
-        } else {
-          resolve(null);
-        }
+        if (result && result.data instanceof Uint8Array) resolve(result.data);
+        else resolve(null);
       };
+      getRequest.onerror = (event) => reject((event.target as IDBRequest).error);
+    });
+  }
+
+  public async append(key: string, data: Uint8Array): Promise<void> {
+    if (!(data instanceof Uint8Array)) throw new Error("El dato debe ser un Uint8Array.");
+
+    if (!this.pendingUpdates.has(key)) {
+      this.pendingUpdates.set(key, []);
+    }
+    this.pendingUpdates.get(key)!.push(data);
+
+    if (!this.nextFlushPromise) {
+      this.nextFlushPromise = new Promise((resolve, reject) => {
+        this.nextFlushResolve = resolve;
+        this.nextFlushReject = reject;
+      });
+      
+      this.flushTimer = setTimeout(() => this.flush(), 150); 
+    }
+
+    return this.nextFlushPromise;
+  }
+
+  private async flush(): Promise<void> {
+    if (this.flushTimer) {
+      clearTimeout(this.flushTimer);
+      this.flushTimer = null;
+    }
+
+    const updatesToProcess = this.pendingUpdates;
+    this.pendingUpdates = new Map();
+
+    const resolve = this.nextFlushResolve;
+    const reject = this.nextFlushReject;
+
+    this.nextFlushPromise = null;
+    this.nextFlushResolve = null;
+    this.nextFlushReject = null;
+
+    if (updatesToProcess.size === 0) {
+      if (resolve) resolve();
+      return;
+    }
+
+    try {
+      const db = await this.dbPromise;
+      if (!db) throw new Error("No se pudo establecer la conexión con IndexedDB.");
+
+      return new Promise((res, rej) => {
+        const transaction = db.transaction([this.storeName], "readwrite");
+        const store = transaction.objectStore(this.storeName);
+
+        // Iterar sobre cada llave en el buffer
+        updatesToProcess.forEach((newItems, key) => {
+          const getRequest = store.get(key);
+          
+          getRequest.onsuccess = (e) => {
+            const result = (e.target as IDBRequest).result;
+            let currentList: Uint8Array[] = [];
+
+            if (result && Array.isArray(result.data)) {
+              currentList = result.data;
+            } else if (result && result.data instanceof Uint8Array) {
+              currentList = [result.data];
+            }
+
+            // Unimos el historial con todos los micro-updates guardados en memoria
+            const mergedList = currentList.concat(newItems);
+            store.put({ key: key, data: mergedList });
+          };
+        });
+
+        transaction.oncomplete = () => {
+          if (resolve) resolve(); // Resuelve las promesas originales de append()
+          res();
+        };
+        
+        transaction.onerror = (event) => {
+          const error = (event.target as IDBRequest).error;
+          if (reject) reject(error);
+          rej(error);
+        };
+      });
+    } catch (error) {
+      if (reject) reject(error);
+    }
+  }
+
+  public async getList(key: string): Promise<Uint8Array[]> {
+    await this.flush();
+
+    const db = await this.dbPromise;
+    if (!db) throw new Error("No se pudo establecer la conexión con IndexedDB.");
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([this.storeName], "readwrite");
+      const store = transaction.objectStore(this.storeName);
+      
+      const getRequest = store.get(key);
+
+      getRequest.onsuccess = (event) => {
+        const result = (event.target as IDBRequest).result;
+        let listToReturn: Uint8Array[] = [];
+        
+        if (result && Array.isArray(result.data)) {
+          listToReturn = result.data;
+        } else if (result && result.data instanceof Uint8Array) {
+          listToReturn = [result.data];
+        }
+
+        // Si encontramos datos, borramos la llave inmediatamente
+        if (listToReturn.length > 0) {
+          store.delete(key);
+        }
+        
+        resolve(listToReturn);
+      };
+      
       getRequest.onerror = (event) => reject((event.target as IDBRequest).error);
     });
   }
