@@ -6,8 +6,8 @@ run-name: 🚀 Publish Web App 🚀
 on:
     workflow_dispatch:
     push:
-      branches:
-        - main
+      tags:
+        - 'v*'
 
 permissions:
     contents: read
