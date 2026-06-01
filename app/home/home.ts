@@ -25,6 +25,7 @@ const updates = store.getList('loro-updates');
 
 type Session = {
   host: string,
+  file: string,
   user: string,
   pasw: string,
 }
@@ -42,12 +43,14 @@ class App {
   session: Session | null = null;
 
   __view: HTMLElement | null = null;
+  __status: HTMLElement = document.getElementById("status") as HTMLElement;
   
   async init() {
     await Promise.all([
       content.then((c) => {
         const snapshot = c.get(keys.content);
         const session = c.get(keys.session);
+        
         if (snapshot) this.ldoc.import(snapshot);
         if (session) {
           this.restoreSession(session);
@@ -62,11 +65,12 @@ class App {
       }),
     ]);
 
-    document.querySelector('.loader')?.remove();
     
     this.buttons();
     this.side();
     this.main();
+    
+    document.querySelector('.loader')?.remove();
 
     this.ldoc.subscribeLocalUpdates((e) => {
       if (this.connection == null) chanel.postMessage({ updates: e });
@@ -76,6 +80,15 @@ class App {
     chanel.onmessage = (evento) => {
       this.ldoc.import(evento.data.updates)
     };
+
+    document.addEventListener('guitite:status-changed', (e) => {
+      const detail = (e as CustomEvent).detail! as {
+        status: string,
+        context: { code: number, reason: string } | null,
+      }
+      
+      this.__status.innerHTML = `<pre style="text-align: left">${JSON.stringify(detail, null, 2)}</pre>`;
+    })
   }
   
   async main() {
@@ -128,26 +141,25 @@ class App {
     console.timeEnd("4. creating side view")
   }
 
-  async buttons() {
+  buttons() {
     const __btImport = document.getElementById('import')! as HTMLButtonElement;
     const __btExport = document.getElementById('export')! as HTMLButtonElement;
     const __import = document.getElementById('input-archivo')! as HTMLInputElement;
     const __loader = document.getElementById('loader')! as HTMLElement;
   
     const __btSave = document.getElementById('save')! as HTMLButtonElement;
-    __btSave.addEventListener('click', _ => {
-      store.delete(keys.updates).then(_ => {
-        store.set(keys.content, this.ldoc.export({ mode: "snapshot" })).then(() => {
-          __btSave.innerText = '🚀 Saved!!!!'
-          __btSave.disabled = true;
-        
-          startTimer(() => {
-            __btSave.innerText = 'save'
-            __btSave.disabled = false;
-          }, 300);
-        })
-      })
-    })
+    __btSave.addEventListener('click', async _ => {
+      await store.delete(keys.updates);
+      await store.set(keys.content, this.ldoc.export({ mode: "snapshot" }));
+      
+      __btSave.innerText = '🚀 Saved!!!!';
+      __btSave.disabled = true;
+      
+      startTimer(() => {
+        __btSave.innerText = 'save';
+        __btSave.disabled = false;
+      }, 300);
+    });
 
     __btExport.addEventListener('click', e => {
       __btExport.disabled = true;
@@ -220,7 +232,23 @@ class App {
   }
 
   tryConnect() {
-    
+    console.info("triyin");
+    if (this.connection) {
+      this.connection.tryconnect()
+      return;
+    }
+
+    if (this.session == null) return;
+    console.info("color");
+    this.connection = new Connection(
+      `https://${this.session.host}/ws/${this.session.file}`,
+      {
+        doc: this.ldoc,
+        protocols: [ `Auth-${this.session.user}-${this.session.pasw}` ]
+      }
+    )
+
+    this.connection.tryconnect()
   }
 }
 

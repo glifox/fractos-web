@@ -2,7 +2,7 @@
 #new-project--dialog  h3 {
     margin: 0;
 }
-#new-project--dialog {
+:popover-open {
   border: none;
   border-radius: 12px;
   padding: 24px;
@@ -118,4 +118,83 @@ button {
 
 #loader .loader {
     margin: 0;
+}
+
+/* Session */
+
+#session:popover-open {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    width: 400px;
+}
+
+#session:popover-open .footer {
+    align-self: flex-end;
+}
+
+.input {
+  border: solid 2px var(--bd-dark);
+  border-radius: 8px;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  padding: 4px;
+
+  width: calc(100% - 8px);
+  margin: 8px 0;
+}
+
+.input svg {
+  margin-inline: 4px;
+  color: var(--fg-brigth);
+}
+
+.input input {
+  border: none;
+  outline: unset;
+
+  font-size: 1.12rem;
+  padding: 2px;
+  flex-grow: 1;
+
+  background-color: transparent;
+  color: var(--fg-brigth);
+}
+
+.input form {
+    width: 100%;
+}
+
+.input placeholder {
+  color: var(--fg-muted);
+}
+
+.url-input {
+  display: inline-flex;
+  color: var(--fg-brigth);
+
+  font-size: 1.1rem;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.url-input input {
+  display: inline-block;
+
+  border: none;
+  outline: none;
+  padding: 0;
+  margin-inline: 2px;
+
+  font-size: inherit;
+  min-width: 0;
+
+  background-color: var(--bg-dark);
+  border-radius: 8px;
+  padding-inline: 4px;
 }
