@@ -10,11 +10,13 @@
     <link rel="stylesheet" href="styles/dialogs.css">
     <link rel="stylesheet" href="styles/sidebar.css">
     <link rel="stylesheet" href="styles/tasks.css">
+    <link rel="stylesheet" href="styles/session.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/dark/mocha.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/feraxjs/themes@v0.1.0/catppuccin/light/latte.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="home.ts" type="module"></script>
     <script src="../components/web/new-project.dialog.ts" type="module"></script>
+    <script src="../components/web/fit-input.ts" type="module"></script>
 </head>
 <body>
     <section class="side panel">
@@ -27,7 +29,6 @@
         </section>
         <button id="status">Disconnected</button>
         <button id="new" popovertarget="new-project--dialog">New Project</button>
-        <button id="session-btn" popovertarget="session">New Project</button>
         <div class="divider">Your projects</div>
         <section class="projects">
             <section id="list">
@@ -57,6 +58,7 @@
     </section>
         
     <section class="main panel">
+        <button id="session-btn" popovertarget="session"></button>
         <div class="loader"></div>
         <div id="view"></div>
     </section>
@@ -87,14 +89,23 @@
 
     <dialog id="session" popover>
         <form>
-          <label for="username">user name</label><br>
-          <input type="text" id="username" name="username"><br>
-          <label for="password">password</label><br>
-          <input type="password" id="password" name="password"><br>
-          <label for="host">host</label><br>
-          <input type="host" id="host" name="host"><br>
+            
+            <div class="input">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input type="text" name="username" id="username" placeholder="username">
+            </div>
+            <div class="input">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-key-round-icon lucide-key-round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg>
+                <input type="password" id="password" name="password" placeholder="password">
+            </div>
+            <div class="url-input">
+              <label class="url" for="host">https://</label>
+              <input type="text" id="host" name="host" placeholder="host.example.com" is="fit-input" >
+              <label class="url" for="file">/ws/</label>
+              <input type="text" id="file" name="file" placeholder="example" is="fit-input" >
+            </div>
         </form>
-        <div>
+        <div class="footer">
             <button class="cancel">cancel</button>
             <button class="confirm" id="login">login</button>
         </div>
