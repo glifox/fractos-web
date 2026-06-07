@@ -8,6 +8,7 @@ import { downloadContent, startTimer } from "../utils";
 import type { NewProjectDialog } from "../components/web/new-project.dialog";
 import { Clipboard } from "../keymap/clipboard";
 import { Connection } from "@glifox/guitite";
+import type { StatusButton } from "../components/web/status-button";
 
 const store = new LocalDatabase();
 const chanel = new BroadcastChannel('fractos:updates:ldco');
@@ -43,9 +44,42 @@ class App {
   session: Session | null = null;
 
   __view: HTMLElement | null = null;
-  __status: HTMLElement = document.getElementById("status") as HTMLElement;
+  __status: StatusButton = document.getElementById("session-btn") as StatusButton;
+  __logout: HTMLButtonElement = document.getElementById('logout') as HTMLButtonElement;
   
   async init() {
+    document.addEventListener('guitite:status-changed', (e) => {
+      const detail = (e as CustomEvent).detail! as {
+        status: string,
+        context: { code: number, reason: string } | null,
+      }
+
+      this.__logout.classList.remove('hide');
+      if (detail.status === 'connected') {
+        this.__status.changeState('success', 'connected');
+        return
+      }
+      
+      if (detail.status === 'connecting') {
+        this.__status.changeState('warning', 'connecting')
+        return
+      }
+
+      if (detail.context) {
+        if (detail.context.reason === 'Self killed') {
+          this.__status.changeState('muted', 'offline')
+          return
+        }
+        this.__status.changeState('warning', detail.context.reason);
+        return
+      }
+
+      if (detail.status === 'disconnected') {
+        this.__status.changeState('error', 'disconnected');
+        return
+      }
+    })
+    
     await Promise.all([
       content.then((c) => {
         const snapshot = c.get(keys.content);
@@ -65,7 +99,7 @@ class App {
       }),
     ]);
 
-    
+    this.setSessionPopover()
     this.buttons();
     this.side();
     this.main();
@@ -80,15 +114,6 @@ class App {
     chanel.onmessage = (evento) => {
       this.ldoc.import(evento.data.updates)
     };
-
-    document.addEventListener('guitite:status-changed', (e) => {
-      const detail = (e as CustomEvent).detail! as {
-        status: string,
-        context: { code: number, reason: string } | null,
-      }
-      
-      this.__status.innerHTML = `<pre style="text-align: left">${JSON.stringify(detail, null, 2)}</pre>`;
-    })
   }
   
   async main() {
@@ -211,6 +236,16 @@ class App {
       __loader.hidePopover()
       __btImport.disabled = false;
     })
+
+    this.__logout.addEventListener('click', _ => {
+      this.connection?.close()
+      this.connection = null;
+      
+      this.session = null;
+      store.delete(keys.session);
+      
+      this.__logout.classList.add('hide');
+    })
   }
 
   setSession(session: Session) {
@@ -219,10 +254,11 @@ class App {
     this.tryConnect();
   }
 
-  private saveSession(): Uint8Array {
+  private saveSession() {
     const jsonString = JSON.stringify(this.session);
     const encoder = new TextEncoder();
-    return encoder.encode(jsonString);
+    const encodedSession = encoder.encode(jsonString);
+    store.set(keys.session, encodedSession)
   }
 
   private restoreSession(data: Uint8Array) {
@@ -232,14 +268,7 @@ class App {
   }
 
   tryConnect() {
-    console.info("triyin");
-    if (this.connection) {
-      this.connection.tryconnect()
-      return;
-    }
-
     if (this.session == null) return;
-    console.info("color");
     this.connection = new Connection(
       `https://${this.session.host}/ws/${this.session.file}`,
       {
@@ -249,6 +278,51 @@ class App {
     )
 
     this.connection.tryconnect()
+  }
+
+  private setSessionPopover() {
+    const username = document.getElementById('username') as HTMLInputElement;
+    const password = document.getElementById('password') as HTMLInputElement;
+    const host = document.getElementById('host') as HTMLInputElement;
+    const file = document.getElementById('file') as HTMLInputElement;
+
+    const validate = (input: HTMLInputElement) => {
+      const value = input.value; 
+
+      if (value.length < 1) {
+        input.classList.add('error');
+        input.addEventListener('keydown', _ => input.classList.remove('error'))
+        return null;
+      }
+
+      return value;
+    }
+    
+    document.getElementById('login-cancel')?.addEventListener('click', () => {
+      document.getElementById('session')?.hidePopover()
+    })
+    
+    document.getElementById('login')?.addEventListener('click', () => {
+      const username_value = validate(username);
+      const password_value = validate(password);
+      const host_value = validate(host);
+      const file_value = validate(file);
+      
+      if (username_value == null) return;
+      if (password_value == null) return;
+      if (host_value == null) return;
+      if (file_value == null) return;
+      
+      this.setSession({
+        file: file_value,
+        host: host_value,
+        pasw: password_value,
+        user: username_value,
+      })
+      
+      document.getElementById('session')?.hidePopover();
+      password.value = ''
+    })
   }
 }
 
