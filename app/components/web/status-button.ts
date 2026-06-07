@@ -3,7 +3,7 @@
 const observedAttributes = ["status", "label", "target"] as const;
 const validStatus = ['muted', 'error', 'warning', 'success'] as const;
 
-export type StatusButtonType = typeof validStatus[number];
+type StatusButtonType = typeof validStatus[number];
 
 const style = /* css */`
   button {
@@ -68,7 +68,7 @@ const style = /* css */`
 const cloud = '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>';
 const slashedCloud = '<path d="M10.94 5.274A7 7 0 0 1 15.71 10h1.79a4.5 4.5 0 0 1 4.222 6.057"/><path d="M18.796 18.81A4.5 4.5 0 0 1 17.5 19H9A7 7 0 0 1 5.79 5.78"/><path d="m2 2 20 20"/>';
 
-class StatusButton extends HTMLElement {
+export class StatusButton extends HTMLElement {
   static observedAttributes = observedAttributes;
   private _status: StatusButtonType = "muted";
   private _label: string = "";

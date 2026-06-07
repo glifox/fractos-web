@@ -147,6 +147,10 @@ button {
 
   width: calc(100% - 8px);
   margin: 8px 0;
+
+  &:has(.error) {
+      border: solid 2px var(--sm-bd-error);
+  }
 }
 
 .input svg {
@@ -197,4 +201,8 @@ button {
   background-color: var(--bg-dark);
   border-radius: 8px;
   padding-inline: 4px;
+
+  &.error {
+      color: var(--sm-fg-error);
+  }
 }

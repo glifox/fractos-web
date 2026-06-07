@@ -188,6 +188,10 @@
     width: 32px;
     color: var(--fg-muted);
     background-color: var(--ctp-surface0);
+
+    &.hide{
+        display: none;
+    }
 }
 
 .links  button.error {
