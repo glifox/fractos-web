@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="home.ts" type="module"></script>
     <script src="../components/web/new-project.dialog.ts" type="module"></script>
+    <script src="../components/web/status-button.ts" type="module"></script>
     <script src="../components/web/fit-input.ts" type="module"></script>
 </head>
 <body>
@@ -27,7 +28,6 @@
                 <p>Infinite nested tasks</p>
             </section>
         </section>
-        <button id="status">Disconnected</button>
         <button id="new" popovertarget="new-project--dialog">New Project</button>
         <div class="divider">Your projects</div>
         <section class="projects">
@@ -58,7 +58,7 @@
     </section>
         
     <section class="main panel">
-        <button id="session-btn" popovertarget="session"></button>
+        <status-button id="session-btn" target="session" label="offline"></status-button>
         <div class="loader"></div>
         <div id="view"></div>
     </section>
