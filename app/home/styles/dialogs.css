@@ -206,3 +206,19 @@ button {
       color: var(--sm-fg-error);
   }
 }
+
+
+#error {
+    & #json-editor {
+        max-height: 200px;
+        border-radius: 12px;
+        overflow: hidden;
+        
+        margin-bottom: 16px;
+    }
+
+    & .footer {
+        display: flex;
+        flex-direction: row-reverse;
+    }
+}
