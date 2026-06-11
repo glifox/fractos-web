@@ -9,6 +9,8 @@ import type { NewProjectDialog } from "../components/web/new-project.dialog";
 import { Clipboard } from "../keymap/clipboard";
 import { Connection } from "@glifox/guitite";
 import type { StatusButton } from "../components/web/status-button";
+import type { EditorView } from "codemirror";
+import { Editor } from "../components/class/json";
 
 const store = new LocalDatabase();
 const chanel = new BroadcastChannel('fractos:updates:ldco');
@@ -46,9 +48,12 @@ class App {
   __view: HTMLElement | null = null;
   __status: StatusButton = document.getElementById("session-btn") as StatusButton;
   __logout: HTMLButtonElement = document.getElementById('logout') as HTMLButtonElement;
+
+  __error = Editor("", document.getElementById("json-editor")!)
   
   async init() {
     document.addEventListener('guitite:status-changed', (e) => {
+      this.__status.setAttribute("target", "session");
       const detail = (e as CustomEvent).detail! as {
         status: string,
         context: { code: number, reason: string } | null,
@@ -57,11 +62,12 @@ class App {
       this.__logout.classList.remove('hide');
       if (detail.status === 'connected') {
         this.__status.changeState('success', 'connected');
+        this.__error.setText("")
         return
       }
       
       if (detail.status === 'connecting') {
-        this.__status.changeState('warning', 'connecting')
+        this.__status.changeState('warning', 'connecting');
         return
       }
 
@@ -70,6 +76,8 @@ class App {
           this.__status.changeState('muted', 'offline')
           return
         }
+        this.__status.setAttribute("target", "error");
+        this.__error.setText(detail.context)
         this.__status.changeState('warning', detail.context.reason);
         return
       }
@@ -245,6 +253,18 @@ class App {
       store.delete(keys.session);
       
       this.__logout.classList.add('hide');
+    })
+
+    document.getElementById("retry")?.addEventListener('click', () => {
+      if (this.connection) this.connection.tryconnect()
+      else {
+        this.__status.changeState('muted', 'offline');
+        this.__status.setAttribute("target", "session");
+        this.session = null;
+        store.delete(keys.session);
+      }
+      
+      document.getElementById("error")?.hidePopover()
     })
   }
 
